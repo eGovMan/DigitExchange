@@ -69,8 +69,9 @@ public class LineDepartmentController{
                                                .atZone(zoneId);
     
         //Request for Budget by submitting an Estimate
-        BigDecimal amount = new BigDecimal(100);
-        Estimate estimate = new Estimate(program,startDate,endDate,amount);
+        BigDecimal netAmount = new BigDecimal(100);
+        BigDecimal grossAmount = new BigDecimal(100);
+        Estimate estimate = new Estimate(program,startDate,endDate,netAmount,grossAmount);
         
         String to = "finance@http://127.0.0.1:8080";
         String from ="line@http://127.0.0.1:8080";
@@ -93,8 +94,10 @@ public class LineDepartmentController{
     public ResponseEntity<String> onestimate_create(@RequestBody Estimate estimate) {
         logger.info("Estimate created with Id:" + estimate.getId());
         
-        BigDecimal amount = new BigDecimal(10);
-        Sanction sanction = new Sanction(estimate,amount);
+        BigDecimal netAmount = new BigDecimal(10);
+        BigDecimal grossAmount = new BigDecimal(10);
+
+        Sanction sanction = new Sanction(estimate,netAmount,grossAmount);
         
         String to = "finance@http://127.0.0.1:8080";
         String from ="line@http://127.0.0.1:8080";

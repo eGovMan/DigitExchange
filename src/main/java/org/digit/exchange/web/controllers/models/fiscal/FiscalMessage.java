@@ -14,8 +14,12 @@ public class FiscalMessage {
     @JsonProperty("version")
     private String version;
     @NotNull
+    @JsonProperty("id")
+    private String id;
     @JsonProperty("type")
     private String type;
+    @JsonProperty("account_code")
+    private String accountCode;
     @JsonProperty("function")
     private String function;
     @JsonProperty("administration")
@@ -36,10 +40,14 @@ public class FiscalMessage {
     private ZonedDateTime startDate;
     @JsonProperty("end-date")
     private ZonedDateTime endDate;
-    @JsonProperty("amount")
-    private BigDecimal amount;
+    @JsonProperty("net_amount")
+    private BigDecimal netAmount;
+    @JsonProperty("gross_amount")
+    private BigDecimal grossAmount;
     @JsonProperty("currency")
     private Currency currency;
+    @JsonProperty("locale")
+    private String locale;
 
     public FiscalMessage(){
         this.version = "1.0.0";
@@ -57,7 +65,8 @@ public class FiscalMessage {
         this.sourceOfFund = other.sourceOfFund;
         this.targetSegment = other.targetSegment;
         this.startDate = other.startDate;
-        this.amount=other.amount;
+        this.netAmount=other.netAmount;
+        this.grossAmount=other.grossAmount;
         this.currency=other.currency;
     }
 }

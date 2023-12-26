@@ -10,12 +10,11 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Getter
 @Setter
 public class Estimate extends FiscalMessage {
-    @JsonProperty("id")
-    private String id;
     @JsonProperty("name")
     private String name;
     @JsonProperty("parent")
@@ -26,25 +25,41 @@ public class Estimate extends FiscalMessage {
     private ZonedDateTime endDate;
     @JsonProperty("estimates")
     private List<Estimate> estimates;
+    @JsonProperty("audit_details")
+    private AuditDetails auditDetails;
+    @JsonProperty("additional_details")
+    private JsonNode additionalDetails;
 
     public Estimate(){}
 
-    public Estimate(Program program, ZonedDateTime startDate, ZonedDateTime endDate, BigDecimal amount){
+    public Estimate(Program program, ZonedDateTime startDate, ZonedDateTime endDate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(program);
         this.setType("estimate");
         this.startDate = startDate;
         this.endDate = endDate;
-        this.setAmount(amount);        
+        this.setNetAmount(netAmount);        
+        this.setGrossAmount(netAmount);        
     }
 
     @JsonIgnore
-    public BigDecimal getTotalAmount() {
+    public BigDecimal getTotalNetAmount() {
         if (estimates != null && !estimates.isEmpty()) {
             return estimates.stream()
-                           .map(Estimate::getAmount)
+                           .map(Estimate::getNetAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
-            return getAmount();
+            return getNetAmount();
+        }
+    }
+
+    @JsonIgnore
+    public BigDecimal getTotalGrossAmount() {
+        if (estimates != null && !estimates.isEmpty()) {
+            return estimates.stream()
+                           .map(Estimate::getGrossAmount)
+                           .reduce(BigDecimal.ZERO, BigDecimal::add);
+        } else {
+            return getGrossAmount();
         }
     }
 }

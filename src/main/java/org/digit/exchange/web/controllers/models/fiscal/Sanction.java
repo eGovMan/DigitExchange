@@ -10,12 +10,11 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Getter
 @Setter
 public class Sanction extends FiscalMessage {
-    @JsonProperty("id")
-    private String id;
     @JsonProperty("name")
     private String name;
     @JsonProperty("parent")
@@ -26,23 +25,40 @@ public class Sanction extends FiscalMessage {
     private ZonedDateTime endDate;
     @JsonProperty("sanctions")
     private List<Sanction> sanctions;
+    @JsonProperty("audit_details")
+    private AuditDetails auditDetails;
+    @JsonProperty("additional_details")
+    private JsonNode additionalDetails;
 
     public Sanction(){}
 
-    public Sanction(Estimate estimate, BigDecimal amount){
+    public Sanction(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
         this.setType("sanction");
-        this.setAmount(amount);        
+        this.setNetAmount(netAmount);        
+        this.setGrossAmount(grossAmount);        
     }
 
     @JsonIgnore
-    public BigDecimal getTotalAmount() {
+    public BigDecimal getTotalNetAmount() {
         if (sanctions != null && !sanctions.isEmpty()) {
             return sanctions.stream()
-                           .map(Sanction::getAmount)
+                           .map(Sanction::getNetAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
-            return getAmount();
+            return getNetAmount();
         }
     }
+
+    @JsonIgnore
+    public BigDecimal getTotalGrossAmount() {
+        if (sanctions != null && !sanctions.isEmpty()) {
+            return sanctions.stream()
+                           .map(Sanction::getGrossAmount)
+                           .reduce(BigDecimal.ZERO, BigDecimal::add);
+        } else {
+            return getNetAmount();
+        }
+    }
+
 }

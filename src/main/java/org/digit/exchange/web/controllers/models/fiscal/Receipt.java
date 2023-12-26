@@ -10,12 +10,11 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Getter
 @Setter
 public class Receipt extends FiscalMessage {
-    @JsonProperty("id")
-    private String id;
     @JsonProperty("name")
     private String name;
     @NotNull
@@ -24,24 +23,41 @@ public class Receipt extends FiscalMessage {
     private ZonedDateTime endDate;
     @JsonProperty("reciepts")
     private List<Receipt> reciepts;
+    @JsonProperty("audit_details")
+    private AuditDetails auditDetails;
+    @JsonProperty("additional_details")
+    private JsonNode additionalDetails;
 
 
     public Receipt(){}
 
-    public Receipt(Demand demand, BigDecimal amount){
+    public Receipt(Demand demand, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(demand);
         this.setType("reciept");
-        this.setAmount(amount);        
+        this.setNetAmount(netAmount);        
+        this.setGrossAmount(grossAmount);        
     }
 
     @JsonIgnore
-    public BigDecimal getTotalAmount() {
+    public BigDecimal getTotalNetAmount() {
         if (reciepts != null && !reciepts.isEmpty()) {
             return reciepts.stream()
-                           .map(Receipt::getAmount)
+                           .map(Receipt::getNetAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
-            return getAmount();
+            return getNetAmount();
         }
     }
+
+    @JsonIgnore
+    public BigDecimal getTotalGrossAmount() {
+        if (reciepts != null && !reciepts.isEmpty()) {
+            return reciepts.stream()
+                           .map(Receipt::getGrossAmount)
+                           .reduce(BigDecimal.ZERO, BigDecimal::add);
+        } else {
+            return getNetAmount();
+        }
+    }
+
 }

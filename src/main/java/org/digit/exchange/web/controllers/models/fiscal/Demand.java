@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Getter
 @Setter
@@ -24,24 +25,40 @@ public class Demand extends FiscalMessage {
     private ZonedDateTime endDate;
     @JsonProperty("demands")
     private List<Demand> demands;
+    @JsonProperty("audit_details")
+    private AuditDetails auditDetails;
+    @JsonProperty("additional_details")
+    private JsonNode additionalDetails;
 
 
     public Demand(){}
 
-    public Demand(Estimate estimate, BigDecimal amount){
+    public Demand(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
         this.setType("demand");
-        this.setAmount(amount);        
+        this.setNetAmount(netAmount);        
+        this.setGrossAmount(grossAmount);        
     }
 
     @JsonIgnore
-    public BigDecimal getTotalAmount() {
+    public BigDecimal getTotalNetAmount() {
         if (demands != null && !demands.isEmpty()) {
             return demands.stream()
-                           .map(Demand::getAmount)
+                           .map(Demand::getNetAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
-            return getAmount();
+            return getNetAmount();
+        }
+    }
+
+    @JsonIgnore
+    public BigDecimal getTotalGrossAmount() {
+        if (demands != null && !demands.isEmpty()) {
+            return demands.stream()
+                           .map(Demand::getGrossAmount)
+                           .reduce(BigDecimal.ZERO, BigDecimal::add);
+        } else {
+            return getGrossAmount();
         }
     }
 }
