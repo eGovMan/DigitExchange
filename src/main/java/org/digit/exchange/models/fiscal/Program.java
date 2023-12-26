@@ -1,4 +1,4 @@
-package org.digit.exchange.web.controllers.models.fiscal;
+package org.digit.exchange.models.fiscal;
 
 import lombok.*;
 

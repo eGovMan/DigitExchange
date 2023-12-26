@@ -1,4 +1,4 @@
-package org.digit.exchange.web.controllers.models;
+package org.digit.exchange.models.fiscal;
 
 import lombok.*;
 
@@ -14,42 +14,37 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 @Getter
 @Setter
-public class Allocation extends FiscalMessage {
+public class Demand extends FiscalMessage {
     @JsonProperty("id")
     private String id;
-    @JsonProperty("sanction_id")
-    private String sanctionId;
-    @JsonProperty("allotment_type")
-    private String allotmentType;
-    @JsonProperty("parent")
-    private String parent;
+    @JsonProperty("name")
+    private String name;
     @NotNull
     private ZonedDateTime startDate;
     @NotNull
     private ZonedDateTime endDate;
-    @JsonProperty("allocations")
-    private List<Allocation> allocations;
+    @JsonProperty("demands")
+    private List<Demand> demands;
     @JsonProperty("audit_details")
     private AuditDetails auditDetails;
     @JsonProperty("additional_details")
     private JsonNode additionalDetails;
 
 
+    public Demand(){}
 
-    public Allocation(){}
-
-    public Allocation(Sanction sanction, BigDecimal netAmount, BigDecimal grossAmount){
-        super.copy(sanction);
-        this.setType("allocation");
-        this.setNetAmount(netAmount);    
+    public Demand(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
+        super.copy(estimate);
+        this.setType("demand");
+        this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }
 
     @JsonIgnore
     public BigDecimal getTotalNetAmount() {
-        if (allocations != null && !allocations.isEmpty()) {
-            return allocations.stream()
-                           .map(Allocation::getNetAmount)
+        if (demands != null && !demands.isEmpty()) {
+            return demands.stream()
+                           .map(Demand::getNetAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
             return getNetAmount();
@@ -58,9 +53,9 @@ public class Allocation extends FiscalMessage {
 
     @JsonIgnore
     public BigDecimal getTotalGrossAmount() {
-        if (allocations != null && !allocations.isEmpty()) {
-            return allocations.stream()
-                           .map(Allocation::getGrossAmount)
+        if (demands != null && !demands.isEmpty()) {
+            return demands.stream()
+                           .map(Demand::getGrossAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
             return getGrossAmount();

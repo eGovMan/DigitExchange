@@ -1,7 +1,10 @@
-package org.digit.exchange.web.controllers;
+package org.digit.exchange.controllers;
 
 import org.digit.exchange.constants.Action;
-import org.digit.exchange.web.controllers.models.*;
+import org.digit.exchange.models.*;
+import org.digit.exchange.models.fiscal.Estimate;
+import org.digit.exchange.models.fiscal.Program;
+import org.digit.exchange.models.fiscal.Sanction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;

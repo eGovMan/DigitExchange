@@ -1,21 +1,29 @@
-package org.digit.exchange.web.controllers.models;
+package org.digit.exchange.models.fiscal;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Currency;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import org.digit.exchange.utils.ZonedDateTimeConverter;
+
+
+@Entity
 @Getter
 @Setter
 public class FiscalMessage {
     @NotNull
+    @JsonProperty("id")
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private String id;
+    @NotNull
     @JsonProperty("version")
     private String version;
-    @NotNull
-    @JsonProperty("id")
-    private String id;
     @JsonProperty("type")
     private String type;
     @JsonProperty("account_code")
@@ -37,8 +45,10 @@ public class FiscalMessage {
     @JsonProperty("target_segment")
     private String targetSegment;
     @JsonProperty("start-date")
+    @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime startDate;
     @JsonProperty("end-date")
+    @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime endDate;
     @JsonProperty("net_amount")
     private BigDecimal netAmount;

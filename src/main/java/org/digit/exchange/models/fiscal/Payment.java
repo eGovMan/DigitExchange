@@ -1,4 +1,4 @@
-package org.digit.exchange.web.controllers.models;
+package org.digit.exchange.models.fiscal;
 
 import lombok.*;
 
@@ -14,36 +14,35 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 @Getter
 @Setter
-public class Sanction extends FiscalMessage {
+public class Payment extends FiscalMessage {
     @JsonProperty("name")
     private String name;
-    @JsonProperty("parent")
-    private String parent;
     @NotNull
     private ZonedDateTime startDate;
     @NotNull
     private ZonedDateTime endDate;
-    @JsonProperty("sanctions")
-    private List<Sanction> sanctions;
+    @JsonProperty("payments")
+    private List<Payment> payments;
     @JsonProperty("audit_details")
     private AuditDetails auditDetails;
     @JsonProperty("additional_details")
     private JsonNode additionalDetails;
 
-    public Sanction(){}
 
-    public Sanction(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
+    public Payment(){}
+
+    public Payment(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
-        this.setType("sanction");
+        this.setType("payment");
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }
 
     @JsonIgnore
     public BigDecimal getTotalNetAmount() {
-        if (sanctions != null && !sanctions.isEmpty()) {
-            return sanctions.stream()
-                           .map(Sanction::getNetAmount)
+        if (payments != null && !payments.isEmpty()) {
+            return payments.stream()
+                           .map(Payment::getNetAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
             return getNetAmount();
@@ -52,13 +51,12 @@ public class Sanction extends FiscalMessage {
 
     @JsonIgnore
     public BigDecimal getTotalGrossAmount() {
-        if (sanctions != null && !sanctions.isEmpty()) {
-            return sanctions.stream()
-                           .map(Sanction::getGrossAmount)
+        if (payments != null && !payments.isEmpty()) {
+            return payments.stream()
+                           .map(Payment::getGrossAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
-            return getNetAmount();
+            return getGrossAmount();
         }
     }
-
 }

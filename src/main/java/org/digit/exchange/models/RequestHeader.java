@@ -1,4 +1,4 @@
-package org.digit.exchange.web.controllers.models;
+package org.digit.exchange.models;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -6,15 +6,24 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.digit.exchange.constants.Action;
+import org.digit.exchange.models.fiscal.FiscalMessage;
+import org.digit.exchange.utils.ZonedDateTimeConverter;
 
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 
+
+@Entity
 @Getter
 @Setter
-public class RequestHeader { 
+public class RequestHeader{ 
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private String id;
     @NotNull
     @JsonProperty("version")
     private String version;
@@ -24,6 +33,7 @@ public class RequestHeader {
     private String messageId;
     @JsonProperty("message_ts")
     @NotNull
+    @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime messageTs;
     @JsonProperty("action")
     @NotNull
@@ -40,10 +50,13 @@ public class RequestHeader {
     private int totalCount;
     @JsonProperty("is_msg_encrypted")
     private boolean isMsgEncrypted;
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonProperty("meta")
     private FiscalMessage fiscalMessage;    
 
     public RequestHeader(){
+        UUID uuid = UUID.randomUUID();
+        this.id = uuid.toString();
         this.version = "1.0.0";
     }
 

@@ -1,18 +1,25 @@
-package org.digit.exchange.web.controllers.models;
+package org.digit.exchange.models;
 
-import java.util.Map;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import org.digit.exchange.constants.Action;
 import org.digit.exchange.constants.Status;
+import org.digit.exchange.models.fiscal.FiscalMessage;
 
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Getter
 @Setter
+@Entity
 public class ResponseHeader {
     @JsonProperty("version")
     private String version;
+    @Id
     @JsonProperty("message_id")
     private String messageId;
     @JsonProperty("message_ts")

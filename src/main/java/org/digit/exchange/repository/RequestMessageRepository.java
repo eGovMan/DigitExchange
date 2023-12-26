@@ -1,12 +1,11 @@
-// package org.digit.exchange.repository;
+package org.digit.exchange.repository;
 
-// import org.springframework.data.jpa.repository.JpaRepository;
-// import org.springframework.stereotype.Repository;
-// import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.digit.exchange.models.*;
+import java.util.List;
 
-// @Repository
-// public interface RequestMessageRepository extends JpaRepository<RequestMessage, Long> {
-//     // Custom query methods
-//     List<RequestMessage> findByHeaderSenderUri(String senderUri);
-//     List<RequestMessage> findByHeaderReceiverId(String receiverId);
-// }
+public interface RequestMessageRepository extends JpaRepository<RequestMessage, String> {
+    // // Custom query methods
+    List<RequestMessage> findByHeaderSenderId(String senderId);
+    List<RequestMessage> findByHeaderReceiverId(String receiverId);
+}

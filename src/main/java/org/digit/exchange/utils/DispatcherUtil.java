@@ -1,7 +1,7 @@
 package org.digit.exchange.utils;
 
 import org.springframework.stereotype.Service;
-import org.digit.exchange.web.controllers.models.FiscalMessage;
+import org.digit.exchange.models.fiscal.FiscalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.reactive.function.client.WebClient;

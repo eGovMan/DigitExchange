@@ -1,9 +1,11 @@
-package org.digit.exchange.web.controllers;
+package org.digit.exchange.controllers;
 
 import org.digit.exchange.config.AppConfig;
 import org.digit.exchange.constants.Status;
 import org.digit.exchange.exceptions.ResourceNotFoundException;
-import org.digit.exchange.web.controllers.models.*;
+import org.digit.exchange.models.*;
+import org.digit.exchange.models.fiscal.FiscalMessage;
+import org.digit.exchange.service.ExchangeService;
 import org.digit.exchange.utils.DispatcherUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,12 +31,14 @@ public class ExchangeController{
 
     private final AppConfig config;
     private final DispatcherUtil dispatcher;
+    private final ExchangeService service;
 
     // private static final Logger logger = LoggerFactory.getLogger(ExchangeController.class);
 
-    public ExchangeController(AppConfig config, DispatcherUtil dispatcher) {
+    public ExchangeController(AppConfig config, DispatcherUtil dispatcher, ExchangeService service) {
         this.config = config;
         this.dispatcher = dispatcher;
+        this.service = service;
     }
 
     public String[] parseDID(String input) {
@@ -110,7 +114,9 @@ public class ExchangeController{
                 //Verify Signature
             }
         }
-        //Log Message in Message Store
+        //Save Message in Message Store
+        service.createRequestMessage(messageRequest);
+
         FiscalMessage fiscalMessage = messageRequest.getHeader().getFiscalMessage();
         String fiscalMessageStr = messageRequest.getMessage();
         fiscalResponse = dispatcher.dispatch(deliverToUrl,fiscalMessage, fiscalMessageStr);

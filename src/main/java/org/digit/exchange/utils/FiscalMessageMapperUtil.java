@@ -1,13 +1,13 @@
 package org.digit.exchange.utils;
 
+import org.digit.exchange.models.fiscal.Allocation;
+import org.digit.exchange.models.fiscal.Demand;
+import org.digit.exchange.models.fiscal.Estimate;
+import org.digit.exchange.models.fiscal.FiscalMessage;
+import org.digit.exchange.models.fiscal.Program;
+import org.digit.exchange.models.fiscal.Receipt;
+import org.digit.exchange.models.fiscal.Sanction;
 import org.springframework.stereotype.Service;
-import org.digit.exchange.web.controllers.models.Allocation;
-import org.digit.exchange.web.controllers.models.Demand;
-import org.digit.exchange.web.controllers.models.Estimate;
-import org.digit.exchange.web.controllers.models.FiscalMessage;
-import org.digit.exchange.web.controllers.models.Program;
-import org.digit.exchange.web.controllers.models.Receipt;
-import org.digit.exchange.web.controllers.models.Sanction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

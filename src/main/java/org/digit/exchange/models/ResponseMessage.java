@@ -1,4 +1,4 @@
-package org.digit.exchange.web.controllers.models;
+package org.digit.exchange.models;
 
 import lombok.*;
 
