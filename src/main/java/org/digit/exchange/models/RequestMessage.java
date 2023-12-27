@@ -38,7 +38,6 @@ public class RequestMessage{
     private String signature;
     @JsonProperty("header")
     @Embedded
-    @OneToOne(cascade = CascadeType.ALL)
     private RequestHeader header;
     @JsonProperty("message")
     @Column(columnDefinition = "TEXT")

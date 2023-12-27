@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.digit.exchange.models.RequestMessage;
 import org.digit.exchange.repository.RequestMessageRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,5 +43,17 @@ public class ExchangeService {
     public void deleteRequestMessage(String id) {
         requestMessageRepository.deleteById(id);
     }
+
+    // Find by ReceiverId
+    public Page<RequestMessage> findByReceiverId(String id, Pageable pageable) {
+        Page<RequestMessage> result = requestMessageRepository.findByHeaderReceiverId(id,pageable);
+        return result;
+    }
+
+    // Find by ReceiverId
+    public Page<RequestMessage> findBySenderId(String id, Pageable pageable) {
+        return requestMessageRepository.findByHeaderSenderId(id,pageable);
+    }
+
     
 }

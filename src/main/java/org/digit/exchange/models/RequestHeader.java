@@ -17,10 +17,8 @@ import jakarta.validation.constraints.NotNull;
 
 
 @Embeddable
-@Entity
 @Getter
 @Setter
-@Table(name="request_header")
 public class RequestHeader{ 
     @Id
     private String id;
@@ -50,7 +48,7 @@ public class RequestHeader{
     private int totalCount;
     @JsonProperty("is_msg_encrypted")
     private boolean isMsgEncrypted;
-    @OneToOne(cascade = CascadeType.ALL)
+    // @OneToOne(cascade = CascadeType.ALL)
     @JsonProperty("meta")
     @Embedded
     private FiscalMessage fiscalMessage;    

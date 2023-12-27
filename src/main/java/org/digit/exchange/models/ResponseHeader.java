@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Getter
 @Setter
-@Entity
 public class ResponseHeader {
     @JsonProperty("version")
     private String version;

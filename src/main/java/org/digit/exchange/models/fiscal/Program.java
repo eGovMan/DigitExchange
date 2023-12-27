@@ -20,4 +20,8 @@ public class Program extends FiscalMessage {
     @JsonProperty("additional_details")
     private JsonNode additionalDetails;
 
+    public Program(){
+        this.setType("program");
+    }
+
 }

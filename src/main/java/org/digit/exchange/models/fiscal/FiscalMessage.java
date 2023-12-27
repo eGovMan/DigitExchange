@@ -15,13 +15,10 @@ import org.digit.exchange.utils.CurrencyConverter;
 import org.digit.exchange.utils.ZonedDateTimeConverter;
 
 
-@Entity
-@Table(name="fiscal_message")
 @Getter
 @Setter
 @Embeddable
 public class FiscalMessage {
-    @NotNull
     @JsonProperty("id")
     @Id
     private String id;
@@ -68,13 +65,14 @@ public class FiscalMessage {
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
         this.schema_version = "1.0.0";
+        this.setType( this.getClass().getSimpleName().toLowerCase());
     }
 
     public void copy(FiscalMessage other){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
+        this.setType( this.getClass().getSimpleName().toLowerCase());
         this.schema_version = other.schema_version;
-        this.type = other.type;
         this.function = other.function;
         this.administration = other.administration;
         this.location = other.location;

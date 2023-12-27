@@ -2,16 +2,28 @@ package org.digit.exchange.controllers;
 
 import org.digit.exchange.config.AppConfig;
 import org.digit.exchange.constants.Status;
+import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.exceptions.ResourceNotFoundException;
 import org.digit.exchange.models.*;
 import org.digit.exchange.models.fiscal.FiscalMessage;
 import org.digit.exchange.service.ExchangeService;
 import org.digit.exchange.utils.DispatcherUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 // import jakarta.servlet.http.HttpServletRequest;
 // import org.springframework.beans.factory.annotation.Autowired;
@@ -264,6 +276,34 @@ public class ExchangeController{
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @RequestMapping(value = "/inbox", method = RequestMethod.POST)
+    public ResponseEntity<Page<RequestMessage>> inbox(@RequestBody RequestMessage messageRequest) {
+        try {
+            String receiverId = messageRequest.getHeader().getReceiverId();
+            String message = messageRequest.getMessage();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(message);
+
+            int page = rootNode.path("page").asInt();
+            int size = rootNode.path("size").asInt();
+            Pageable pageable = PageRequest.of(page, size);
+            Page<RequestMessage> result = service.findByReceiverId(receiverId, pageable);
+            return ResponseEntity.ok(result);
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new CustomException("Error processing message object.", e);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new CustomException("Internal Server Error.", e);
+        }
+    }
+
+    @RequestMapping(value = "/sentitems", method = RequestMethod.POST)
+    public ResponseEntity<Page<RequestMessage>> sentItems(String senderId, Pageable pageable) {
+        return ResponseEntity.ok(service.findBySenderId(senderId, pageable));
     }
 
 }
