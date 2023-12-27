@@ -41,7 +41,7 @@ public class RequestMessage{
     @OneToOne(cascade = CascadeType.ALL)
     private RequestHeader header;
     @JsonProperty("message")
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "TEXT")
     private String message;    
 
     public RequestMessage(){

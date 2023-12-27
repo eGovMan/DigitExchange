@@ -71,6 +71,8 @@ public class FiscalMessage {
     }
 
     public void copy(FiscalMessage other){
+        UUID uuid = UUID.randomUUID();
+        this.id = uuid.toString();
         this.schema_version = other.schema_version;
         this.type = other.type;
         this.function = other.function;

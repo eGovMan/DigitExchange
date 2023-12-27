@@ -44,8 +44,10 @@ public class FinanceDepartmentController{
     public ResponseEntity<String> program_create(@RequestBody Program program) {
         logger.info("Creating new program");
 
+        Program programReply = new Program();
+        programReply.copy(program);
         //Set Program Code indicating Program has been created
-        program.setProgram(program.getName().toUpperCase());
+        programReply.setProgram(program.getName().toUpperCase());
 
         //Tell line that program has been created.
         RequestMessage request;
@@ -53,7 +55,7 @@ public class FinanceDepartmentController{
             String to = "line@http://127.0.0.1:8080";
             String from ="finance@http://127.0.0.1:8080";
             Action action = Action.create;
-            request = new RequestMessage(to, from, program, action);
+            request = new RequestMessage(to, from, programReply, action);
         } catch (RuntimeException e) {
             // Return a ResponseEntity with an appropriate message and HTTP status
             return ResponseEntity
@@ -83,13 +85,16 @@ public class FinanceDepartmentController{
         UUID estimateId =  UUID.randomUUID();
         estimate.setId(estimateId.toString());
 
+        Estimate estimateReply = new Estimate();
+        estimateReply.copy(estimate);
+
         //Tell line that estimate has been approved.
         RequestMessage request;
         try {
             String to = "line@http://127.0.0.1:8080";
             String from ="finance@http://127.0.0.1:8080";
             Action action = Action.create;
-            request = new RequestMessage(to, from, estimate, action);
+            request = new RequestMessage(to, from, estimateReply, action);
         } catch (RuntimeException e) {
             // Return a ResponseEntity with an appropriate message and HTTP status
             return ResponseEntity
@@ -115,9 +120,8 @@ public class FinanceDepartmentController{
     public ResponseEntity<String> sanction_create(@RequestBody Sanction sanction) {
         logger.info("Creating new sanction");
 
-        //Set Sanction Id indicating Estimate has been created
-        UUID sanctionId =  UUID.randomUUID();
-        sanction.setId(sanctionId.toString());
+        Sanction sanctionReply= new Sanction();
+        sanctionReply.copy(sanction);
 
         //Tell line that estimate has been approved.
         RequestMessage request;
@@ -125,7 +129,7 @@ public class FinanceDepartmentController{
             String to = "line@http://127.0.0.1:8080";
             String from ="finance@http://127.0.0.1:8080";
             Action action = Action.create;
-            request = new RequestMessage(to, from, sanction, action);
+            request = new RequestMessage(to, from, sanctionReply, action);
         } catch (RuntimeException e) {
             // Return a ResponseEntity with an appropriate message and HTTP status
             return ResponseEntity
