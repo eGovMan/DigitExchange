@@ -37,9 +37,11 @@ public class RequestMessage{
     @JsonProperty("signature")
     private String signature;
     @JsonProperty("header")
+    @Embedded
     @OneToOne(cascade = CascadeType.ALL)
     private RequestHeader header;
     @JsonProperty("message")
+    @Column(columnDefinition = "jsonb")
     private String message;    
 
     public RequestMessage(){
@@ -48,6 +50,8 @@ public class RequestMessage{
     }
 
     public RequestMessage(String to, String from, FiscalMessage message,Action action){
+        UUID uuid = UUID.randomUUID();
+        this.id = uuid.toString();
         this.header = new RequestHeader(to,from,message,action);
         if(message instanceof Program){
             Program program = (Program)message;

@@ -3,6 +3,8 @@ package org.digit.exchange.models.fiscal;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Currency;
+import java.util.UUID;
+
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,14 +19,15 @@ import org.digit.exchange.utils.ZonedDateTimeConverter;
 @Table(name="fiscal_message")
 @Getter
 @Setter
+@Embeddable
 public class FiscalMessage {
     @NotNull
     @JsonProperty("id")
     @Id
     private String id;
     @NotNull
-    @JsonProperty("version")
-    private String version;
+    @JsonProperty("schema_version")
+    private String schema_version;
     @JsonProperty("type")
     private String type;
     @JsonProperty("account_code")
@@ -62,11 +65,13 @@ public class FiscalMessage {
     private String locale;
 
     public FiscalMessage(){
-        this.version = "1.0.0";
+        UUID uuid = UUID.randomUUID();
+        this.id = uuid.toString();
+        this.schema_version = "1.0.0";
     }
 
     public void copy(FiscalMessage other){
-        this.version = other.version;
+        this.schema_version = other.schema_version;
         this.type = other.type;
         this.function = other.function;
         this.administration = other.administration;

@@ -42,6 +42,6 @@ public class ResponseHeader {
     private int totalCount;
     @JsonProperty("is_msg_encrypted")
     private boolean isMsgEncrypted;
-    @JsonProperty("meta")
-    private FiscalMessage meta;   
+    // @JsonProperty("meta")
+    // private FiscalMessage meta;   
 }

@@ -68,7 +68,7 @@ public class ExchangeController{
         //Count
         header.setTotalCount(count);
         header.setMsgEncrypted(isMsgEncrypted);
-        header.setMeta(messageRequest.getHeader().getFiscalMessage());
+        // header.setMeta(messageRequest.getHeader().getFiscalMessage());
         response.setHeader(header);
         //If isMsgEncrypted then encrypt message
             //Encrypt(message)

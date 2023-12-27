@@ -16,14 +16,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 
-
+@Embeddable
 @Entity
 @Getter
 @Setter
 @Table(name="request_header")
 public class RequestHeader{ 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
     private String id;
     @NotNull
     @JsonProperty("version")
@@ -52,8 +51,8 @@ public class RequestHeader{
     @JsonProperty("is_msg_encrypted")
     private boolean isMsgEncrypted;
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fiscal_message_id", referencedColumnName = "id")
     @JsonProperty("meta")
+    @Embedded
     private FiscalMessage fiscalMessage;    
 
     public RequestHeader(){

@@ -10,8 +10,11 @@ import jakarta.persistence.Converter;
 public class ZonedDateTimeConverter implements AttributeConverter<ZonedDateTime, String> {
     @Override
     public String convertToDatabaseColumn(ZonedDateTime zonedDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
-        return zonedDateTime.format(formatter);
+        if(zonedDateTime != null){
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+            return zonedDateTime.format(formatter);
+        }
+        return "";
     }
 
     @Override
