@@ -6,20 +6,21 @@ import java.util.Currency;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
+import org.digit.exchange.utils.CurrencyConverter;
 import org.digit.exchange.utils.ZonedDateTimeConverter;
 
 
 @Entity
+@Table(name="fiscal_message")
 @Getter
 @Setter
 public class FiscalMessage {
     @NotNull
     @JsonProperty("id")
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
     private String id;
     @NotNull
     @JsonProperty("version")
@@ -44,10 +45,10 @@ public class FiscalMessage {
     private String sourceOfFund;
     @JsonProperty("target_segment")
     private String targetSegment;
-    @JsonProperty("start-date")
+    @JsonProperty("start_date")
     @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime startDate;
-    @JsonProperty("end-date")
+    @JsonProperty("end_date")
     @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime endDate;
     @JsonProperty("net_amount")
@@ -55,6 +56,7 @@ public class FiscalMessage {
     @JsonProperty("gross_amount")
     private BigDecimal grossAmount;
     @JsonProperty("currency")
+    @Convert(converter = CurrencyConverter.class)
     private Currency currency;
     @JsonProperty("locale")
     private String locale;

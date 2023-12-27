@@ -21,12 +21,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.UUID;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 @Getter
 @Setter
 @Entity
+@Table(name="request_message")
 public class RequestMessage{
 
     private static final Logger logger = LoggerFactory.getLogger(RequestMessage.class);

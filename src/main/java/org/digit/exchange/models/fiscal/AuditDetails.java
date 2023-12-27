@@ -4,8 +4,8 @@ import lombok.*;
 
 import java.time.ZonedDateTime;
 
-import javax.persistence.Convert;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Convert;
+import jakarta.validation.constraints.NotNull;
 
 import org.digit.exchange.utils.ZonedDateTimeConverter;
 

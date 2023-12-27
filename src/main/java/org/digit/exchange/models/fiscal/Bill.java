@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import javax.persistence.Convert;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Convert;
+import jakarta.validation.constraints.NotNull;
 
 import org.digit.exchange.utils.ZonedDateTimeConverter;
 
@@ -22,9 +22,11 @@ public class Bill extends FiscalMessage {
     private String name;
     @NotNull
     @Convert(converter = ZonedDateTimeConverter.class)
+    @JsonProperty("start_date")
     private ZonedDateTime startDate;
     @NotNull
     @Convert(converter = ZonedDateTimeConverter.class)
+    @JsonProperty("end_date")
     private ZonedDateTime endDate;
     @JsonProperty("bills")
     private List<Bill> bills;

@@ -12,14 +12,15 @@ import org.digit.exchange.utils.ZonedDateTimeConverter;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 
 
 @Entity
 @Getter
 @Setter
+@Table(name="request_header")
 public class RequestHeader{ 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -51,6 +52,7 @@ public class RequestHeader{
     @JsonProperty("is_msg_encrypted")
     private boolean isMsgEncrypted;
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "fiscal_message_id", referencedColumnName = "id")
     @JsonProperty("meta")
     private FiscalMessage fiscalMessage;    
 
