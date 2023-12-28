@@ -25,6 +25,8 @@ public class Estimate extends FiscalMessage {
     private ZonedDateTime endDate;
     @JsonProperty("estimates")
     private List<Estimate> estimates;
+    @JsonProperty("program")
+    private Program program;
     @JsonProperty("audit_details")
     private AuditDetails auditDetails;
     @JsonProperty("additional_details")
@@ -34,7 +36,7 @@ public class Estimate extends FiscalMessage {
 
     public Estimate(Program program, ZonedDateTime startDate, ZonedDateTime endDate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(program);
-        this.setType("estimate");
+        this.setProgram(program);
         this.startDate = startDate;
         this.endDate = endDate;
         this.setNetAmount(netAmount);        

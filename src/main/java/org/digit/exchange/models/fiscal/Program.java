@@ -12,7 +12,7 @@ public class Program extends FiscalMessage {
     @JsonProperty("name")
     private String name;
     @JsonProperty("parent")
-    private String parent;
+    private Program parent;
     @JsonProperty("objectives")
     private String[] objectives;    
     @JsonProperty("audit_details")
@@ -21,7 +21,6 @@ public class Program extends FiscalMessage {
     private JsonNode additionalDetails;
 
     public Program(){
-        this.setType("program");
     }
 
 }

@@ -39,7 +39,7 @@ public class DispatcherUtil {
         // ProgramRequestMessage programRequestMessage = new ProgramRequestMessage();
         // programRequestMessage.setHeader(fiscalHeader);        
         FiscalMessage fiscalMessage;
-        fiscalMessage = this.mapper.formatMessage(fiscalHeader.getType(),fiscalMessageStr);
+        fiscalMessage = this.mapper.formatMessage(fiscalHeader.getFiscalMessageType(),fiscalMessageStr);
 
         if (url.startsWith("http://") || url.startsWith("https://")) {
             // HTTP call using WebClient

@@ -1,7 +1,10 @@
 package org.digit.exchange.controllers;
 
 import org.digit.exchange.constants.Action;
+import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.models.*;
+import org.digit.exchange.models.fiscal.Allocation;
+import org.digit.exchange.models.fiscal.Bill;
 import org.digit.exchange.models.fiscal.Estimate;
 import org.digit.exchange.models.fiscal.Program;
 import org.digit.exchange.models.fiscal.Sanction;
@@ -13,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import reactor.core.publisher.Mono;
 
@@ -47,7 +54,7 @@ public class FinanceDepartmentController{
         Program programReply = new Program();
         programReply.copy(program);
         //Set Program Code indicating Program has been created
-        programReply.setProgram(program.getName().toUpperCase());
+        programReply.setProgramCode(program.getName().toUpperCase());
 
         //Tell line that program has been created.
         RequestMessage request;
@@ -145,6 +152,59 @@ public class FinanceDepartmentController{
         String result = responseMono.block();
 
         return ResponseEntity.ok(result);
+    }
+
+    //Request to Create a Allocation
+    @RequestMapping(value = "/allocation/create", method = RequestMethod.POST)
+    public ResponseEntity<String> allocation_create(@RequestBody Allocation allocation) {
+        logger.info("Creating new sanction");
+
+        Allocation allocationReply= new Allocation();
+        allocationReply.copy(allocation);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        // Create a new ObjectNode (which is a type of JsonNode)
+        ObjectNode jsonNode = objectMapper.createObjectNode();
+        // Add a note attribute
+        jsonNode.put("note", "Allocation is approved");
+        allocation.setAdditionalDetails(jsonNode);
+
+        //Tell line that estimate has been approved.
+        RequestMessage request;
+        try {
+            String to = "line@http://127.0.0.1:8080";
+            String from ="finance@http://127.0.0.1:8080";
+            Action action = Action.create;
+            request = new RequestMessage(to, from, allocationReply, action);
+        } catch (RuntimeException e) {
+            // Return a ResponseEntity with an appropriate message and HTTP status
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error processing Program Request");
+        }
+        //Make the request
+        Mono<String> responseMono = webClient.post()
+                    .uri("http://127.0.0.1:8080/exchange/v1/on-allocation")
+                    .body(Mono.just(request), RequestMessage.class)
+                    .retrieve()
+                    .bodyToMono(String.class);
+        String result = responseMono.block();
+
+        return ResponseEntity.ok(result);
+    }
+
+    //Request to Create a Allocation
+    @RequestMapping(value = "/disburse/create", method = RequestMethod.POST)
+    public ResponseEntity<String> disburse_create(@RequestBody Bill bill) {
+        logger.info("Creating new sanction");
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String billAsString = objectMapper.writeValueAsString(bill);
+            return ResponseEntity.ok(billAsString);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new CustomException("Internal Server Error.", e);
+        }    
     }
 
 }

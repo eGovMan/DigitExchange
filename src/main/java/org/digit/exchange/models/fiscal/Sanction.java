@@ -17,12 +17,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class Sanction extends FiscalMessage {
     @JsonProperty("name")
     private String name;
-    @JsonProperty("parent")
-    private String parent;
     @NotNull
     private ZonedDateTime startDate;
     @NotNull
     private ZonedDateTime endDate;
+    @JsonProperty("program")
+    private Program program;
     @JsonProperty("sanctions")
     private List<Sanction> sanctions;
     @JsonProperty("audit_details")
@@ -34,7 +34,7 @@ public class Sanction extends FiscalMessage {
 
     public Sanction(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
-        this.setType("sanction");
+        this.setProgram(estimate.getProgram());
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }

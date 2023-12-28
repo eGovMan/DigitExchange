@@ -32,6 +32,8 @@ public class Allocation extends FiscalMessage {
     @NotNull
     @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime endDate;
+    @JsonProperty("sanction")
+    private Sanction sanction;
     @JsonProperty("allocations")
     private List<Allocation> allocations;
     @JsonProperty("audit_details")
@@ -45,7 +47,7 @@ public class Allocation extends FiscalMessage {
 
     public Allocation(Sanction sanction, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(sanction);
-        this.setType("allocation");
+        this.setSanction(sanction);
         this.setNetAmount(netAmount);    
         this.setGrossAmount(grossAmount);        
     }

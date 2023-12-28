@@ -18,9 +18,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Getter
 @Setter
 public class Bill extends FiscalMessage {
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("payee")
+    private Payee payee;
     @NotNull
+    @Convert(converter = ZonedDateTimeConverter.class)
+    @JsonProperty("bill_date")
+    private ZonedDateTime billDate;
     @Convert(converter = ZonedDateTimeConverter.class)
     @JsonProperty("start_date")
     private ZonedDateTime startDate;
@@ -28,6 +31,10 @@ public class Bill extends FiscalMessage {
     @Convert(converter = ZonedDateTimeConverter.class)
     @JsonProperty("end_date")
     private ZonedDateTime endDate;
+    @JsonProperty("allocation")
+    private Allocation allocation;
+    @JsonProperty("bill_count")
+    private int billCount;
     @JsonProperty("bills")
     private List<Bill> bills;
     @JsonProperty("audit_details")
@@ -40,7 +47,7 @@ public class Bill extends FiscalMessage {
 
     public Bill(Allocation allocation, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(allocation);
-        this.setType("bill");
+        this.setBillCount(0);
         this.setNetAmount(netAmount);        
         this.setNetAmount(grossAmount);        
     }
@@ -64,6 +71,15 @@ public class Bill extends FiscalMessage {
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
             return getGrossAmount();
+        }
+    }
+
+    @JsonIgnore
+    public int getBillCount() {
+        if (bills != null && !bills.isEmpty()) {
+            return 1;//getBills().length;
+        } else {
+            return billCount;
         }
     }
 }

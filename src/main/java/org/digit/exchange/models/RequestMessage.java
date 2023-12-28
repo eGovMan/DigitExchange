@@ -4,6 +4,7 @@ import lombok.*;
 
 import org.digit.exchange.constants.Action;
 import org.digit.exchange.models.fiscal.Allocation;
+import org.digit.exchange.models.fiscal.Bill;
 import org.digit.exchange.models.fiscal.Demand;
 import org.digit.exchange.models.fiscal.Estimate;
 import org.digit.exchange.models.fiscal.FiscalMessage;
@@ -91,6 +92,17 @@ public class RequestMessage{
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
                 String jsonProgram = mapper.writeValueAsString(allocation);
+                this.message = jsonProgram;            
+            } catch (JsonProcessingException e) {
+                logger.error("Error while converting FiscalMessage to JSON");
+                throw new RuntimeException("Failed to process JSON", e);
+            }
+        } else if(message instanceof Bill){
+            Bill bill = (Bill)message;
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                String jsonProgram = mapper.writeValueAsString(bill);
                 this.message = jsonProgram;            
             } catch (JsonProcessingException e) {
                 logger.error("Error while converting FiscalMessage to JSON");

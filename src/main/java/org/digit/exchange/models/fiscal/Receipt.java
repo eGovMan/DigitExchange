@@ -33,7 +33,6 @@ public class Receipt extends FiscalMessage {
 
     public Receipt(Demand demand, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(demand);
-        this.setType("reciept");
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }

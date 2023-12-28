@@ -1,6 +1,7 @@
 package org.digit.exchange.utils;
 
 import org.digit.exchange.models.fiscal.Allocation;
+import org.digit.exchange.models.fiscal.Bill;
 import org.digit.exchange.models.fiscal.Demand;
 import org.digit.exchange.models.fiscal.Estimate;
 import org.digit.exchange.models.fiscal.FiscalMessage;
@@ -59,6 +60,16 @@ public class FiscalMessageMapperUtil {
             try {
                 Allocation allocation = mapper.readValue(fiscalMessage, Allocation.class);
                 return allocation;
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }else if(fiscalMessageType.equals("bill")){
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+
+            try {
+                Bill bill = mapper.readValue(fiscalMessage, Bill.class);
+                return bill;
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }

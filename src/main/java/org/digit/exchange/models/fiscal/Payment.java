@@ -33,7 +33,6 @@ public class Payment extends FiscalMessage {
 
     public Payment(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
-        this.setType("payment");
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }

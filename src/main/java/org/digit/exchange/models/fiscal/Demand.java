@@ -35,7 +35,6 @@ public class Demand extends FiscalMessage {
 
     public Demand(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
-        this.setType("demand");
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }

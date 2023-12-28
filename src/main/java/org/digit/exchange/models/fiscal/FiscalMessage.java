@@ -24,27 +24,27 @@ public class FiscalMessage {
     private String id;
     @NotNull
     @JsonProperty("schema_version")
-    private String schema_version;
-    @JsonProperty("type")
-    private String type;
+    private String schemaVersion;
+    @JsonProperty("fiscal_message_type")
+    private String fiscalMessageType;
     @JsonProperty("account_code")
     private String accountCode;
-    @JsonProperty("function")
-    private String function;
-    @JsonProperty("administration")
-    private String administration;
-    @JsonProperty("location")
-    private String location;
-    @JsonProperty("program")
-    private String program;
-    @JsonProperty("recipient_segment")
-    private String recipientSegment;
-    @JsonProperty("economic_segment")
-    private String economicSegment;
-    @JsonProperty("source_of_found")
-    private String sourceOfFund;
-    @JsonProperty("target_segment")
-    private String targetSegment;
+    @JsonProperty("function_code")
+    private String functionCode;
+    @JsonProperty("administration_code")
+    private String administrationCode;
+    @JsonProperty("location_code")
+    private String locationCode;
+    @JsonProperty("program_code")
+    private String programCode;
+    @JsonProperty("recipient_segment_code")
+    private String recipientSegmentCode;
+    @JsonProperty("economic_segment_code")
+    private String economicSegmentCode;
+    @JsonProperty("source_of_found_code")
+    private String sourceOfFundCode;
+    @JsonProperty("target_segment_code")
+    private String targetSegmentCode;
     @JsonProperty("start_date")
     @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime startDate;
@@ -55,35 +55,35 @@ public class FiscalMessage {
     private BigDecimal netAmount;
     @JsonProperty("gross_amount")
     private BigDecimal grossAmount;
-    @JsonProperty("currency")
+    @JsonProperty("currency_code")
     @Convert(converter = CurrencyConverter.class)
-    private Currency currency;
-    @JsonProperty("locale")
-    private String locale;
+    private Currency currencyCode;
+    @JsonProperty("locale_code")
+    private String localeCode;
 
     public FiscalMessage(){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
-        this.schema_version = "1.0.0";
-        this.setType( this.getClass().getSimpleName().toLowerCase());
+        this.schemaVersion = "1.0.0";
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
     }
 
     public void copy(FiscalMessage other){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
-        this.setType( this.getClass().getSimpleName().toLowerCase());
-        this.schema_version = other.schema_version;
-        this.function = other.function;
-        this.administration = other.administration;
-        this.location = other.location;
-        this.program = other.program;
-        this.recipientSegment = other.recipientSegment;
-        this.economicSegment = other.economicSegment;
-        this.sourceOfFund = other.sourceOfFund;
-        this.targetSegment = other.targetSegment;
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+        this.schemaVersion = other.schemaVersion;
+        this.functionCode= other.functionCode;
+        this.administrationCode = other.administrationCode;
+        this.locationCode = other.locationCode;
+        this.programCode = other.programCode;
+        this.recipientSegmentCode = other.recipientSegmentCode;
+        this.economicSegmentCode = other.economicSegmentCode;
+        this.sourceOfFundCode = other.sourceOfFundCode;
+        this.targetSegmentCode = other.targetSegmentCode;
         this.startDate = other.startDate;
         this.netAmount=other.netAmount;
         this.grossAmount=other.grossAmount;
-        this.currency=other.currency;
+        this.currencyCode=other.currencyCode;
     }
 }
