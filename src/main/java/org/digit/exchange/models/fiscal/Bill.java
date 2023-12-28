@@ -43,10 +43,13 @@ public class Bill extends FiscalMessage {
     private JsonNode additionalDetails;
 
 
-    public Bill(){}
+    public Bill(){
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+    }
 
     public Bill(Allocation allocation, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(allocation);
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.setBillCount(0);
         this.setNetAmount(netAmount);        
         this.setNetAmount(grossAmount);        

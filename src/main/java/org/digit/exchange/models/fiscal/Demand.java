@@ -31,10 +31,13 @@ public class Demand extends FiscalMessage {
     private JsonNode additionalDetails;
 
 
-    public Demand(){}
+    public Demand(){
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+    }
 
     public Demand(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }

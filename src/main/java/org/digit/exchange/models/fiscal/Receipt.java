@@ -29,10 +29,13 @@ public class Receipt extends FiscalMessage {
     private JsonNode additionalDetails;
 
 
-    public Receipt(){}
+    public Receipt(){
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+    }
 
     public Receipt(Demand demand, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(demand);
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }

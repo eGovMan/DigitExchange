@@ -21,6 +21,7 @@ public class Program extends FiscalMessage {
     private JsonNode additionalDetails;
 
     public Program(){
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
     }
 
 }

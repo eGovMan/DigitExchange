@@ -43,10 +43,13 @@ public class Allocation extends FiscalMessage {
 
 
 
-    public Allocation(){}
+    public Allocation(){
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+    }
 
     public Allocation(Sanction sanction, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(sanction);
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.setSanction(sanction);
         this.setNetAmount(netAmount);    
         this.setGrossAmount(grossAmount);        

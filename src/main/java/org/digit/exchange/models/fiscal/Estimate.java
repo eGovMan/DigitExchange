@@ -32,10 +32,13 @@ public class Estimate extends FiscalMessage {
     @JsonProperty("additional_details")
     private JsonNode additionalDetails;
 
-    public Estimate(){}
+    public Estimate(){
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+    }
 
     public Estimate(Program program, ZonedDateTime startDate, ZonedDateTime endDate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(program);
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.setProgram(program);
         this.startDate = startDate;
         this.endDate = endDate;

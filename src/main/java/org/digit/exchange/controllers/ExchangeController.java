@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.web.bind.annotation.PostMapping;
 
+// import io.swagger.v3.oas.annotations.Operation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +40,7 @@ import java.time.Instant;
 
 @Controller
 @RequestMapping("/exchange/v1")
+@CrossOrigin(origins = "http://localhost:62926")
 public class ExchangeController{
     // private final ObjectMapper objectMapper;
     // private final HttpServletRequest request;
@@ -138,6 +142,7 @@ public class ExchangeController{
         return response;
     }
 
+    // @Operation(summary = "Send program related Requests", description = "Send request to create or update a program.")
     @RequestMapping(value = "/program", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> program(@RequestBody RequestMessage messageRequest) {
         try {
@@ -148,6 +153,7 @@ public class ExchangeController{
         }
     }
 
+    // @Operation(summary = "Send responses for program related Requests.", description = "Send responses to create or update a program.")
     @RequestMapping(value = "/on-program", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> onprogram(@RequestBody RequestMessage messageRequest) {
         try {
@@ -157,7 +163,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send estimate related Requests", description = "Send request to create or update a estimate.")
     @RequestMapping(value = "/estimate", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> estimate(@RequestBody RequestMessage messageRequest) {
         try {
@@ -167,7 +174,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send responses for estimate related Requests.", description = "Send responses to create or update a estimate.")
     @RequestMapping(value = "/on-estimate", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> onestimate(@RequestBody RequestMessage messageRequest) {
         try {
@@ -177,7 +185,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send sanction related Requests", description = "Send request to create or update a sanction.")
     @RequestMapping(value = "/sanction", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> sanction(@RequestBody RequestMessage messageRequest) {
         try {
@@ -187,7 +196,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send responses for sanction related Requests.", description = "Send responses to create or update a sanction.")
     @RequestMapping(value = "/on-sanction", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> onsanction(@RequestBody RequestMessage messageRequest) {
         try {
@@ -197,7 +207,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }    
-
+    
+    // @Operation(summary = "Send allocation related Requests", description = "Send request to create or update a allocation.")
     @RequestMapping(value = "/allocation", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> allocation(@RequestBody RequestMessage messageRequest) {
         try {
@@ -207,7 +218,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send responses for allocation related Requests.", description = "Send responses to create or update a allocation.")
     @RequestMapping(value = "/on-allocation", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> onallocation(@RequestBody RequestMessage messageRequest) {
         try {
@@ -217,7 +229,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send disburesment related Requests", description = "Send request to create or update a disburesment.")
     @RequestMapping(value = "/disburse", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> disburse(@RequestBody RequestMessage messageRequest) {
         try {
@@ -227,7 +240,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send responses for disbursement related Requests.", description = "Send responses to create or update a disbursement.")
     @RequestMapping(value = "/on-disburse", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> ondisburse(@RequestBody RequestMessage messageRequest) {
         try {
@@ -237,7 +251,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send responses for demand related Requests.", description = "Send responses to create or update a demand.")
     @RequestMapping(value = "/demand", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> demand(@RequestBody RequestMessage messageRequest) {
         try {
@@ -247,7 +262,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send responses for demand related Requests.", description = "Send responses to create or update a demand.")
     @RequestMapping(value = "/on-demand", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> ondemand(@RequestBody RequestMessage messageRequest) {
         try {
@@ -257,7 +273,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send receipt related Requests", description = "Send request to create or update a receipt.")
     @RequestMapping(value = "/receipt", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> receipt(@RequestBody RequestMessage messageRequest) {
         try {
@@ -267,7 +284,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Send responses for receipt related Requests.", description = "Send responses to create or update a receipt.")
     @RequestMapping(value = "/on-receipt", method = RequestMethod.POST)
     public ResponseEntity<ResponseMessage> onreceipt(@RequestBody RequestMessage messageRequest) {
         try {
@@ -277,7 +295,8 @@ public class ExchangeController{
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    // @Operation(summary = "Retrieves request messages for a user.", description = "Retrieves request messages for a user.")
     @RequestMapping(value = "/inbox", method = RequestMethod.POST)
     public ResponseEntity<Page<RequestMessage>> inbox(@RequestBody RequestMessage messageRequest) {
         try {
@@ -300,7 +319,8 @@ public class ExchangeController{
             throw new CustomException("Internal Server Error.", e);
         }
     }
-
+    
+    // @Operation(summary = "Retrieves request messages sent by a user.", description = "Retrieves request messages sent by a user.")
     @RequestMapping(value = "/sentitems", method = RequestMethod.POST)
     public ResponseEntity<Page<RequestMessage>> sentItems(String senderId, Pageable pageable) {
         return ResponseEntity.ok(service.findBySenderId(senderId, pageable));

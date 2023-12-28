@@ -30,10 +30,13 @@ public class Sanction extends FiscalMessage {
     @JsonProperty("additional_details")
     private JsonNode additionalDetails;
 
-    public Sanction(){}
+    public Sanction(){
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+    }
 
     public Sanction(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.setProgram(estimate.getProgram());
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        

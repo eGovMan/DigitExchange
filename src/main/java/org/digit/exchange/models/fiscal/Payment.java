@@ -29,10 +29,13 @@ public class Payment extends FiscalMessage {
     private JsonNode additionalDetails;
 
 
-    public Payment(){}
+    public Payment(){
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+    }
 
     public Payment(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
+        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }

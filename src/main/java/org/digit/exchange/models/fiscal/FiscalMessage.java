@@ -65,13 +65,11 @@ public class FiscalMessage {
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
         this.schemaVersion = "1.0.0";
-        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
     }
 
     public void copy(FiscalMessage other){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
-        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.schemaVersion = other.schemaVersion;
         this.functionCode= other.functionCode;
         this.administrationCode = other.administrationCode;
