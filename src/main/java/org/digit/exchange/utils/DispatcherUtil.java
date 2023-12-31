@@ -1,7 +1,7 @@
 package org.digit.exchange.utils;
 
 import org.springframework.stereotype.Service;
-import org.digit.exchange.models.fiscal.FiscalMessage;
+import org.digit.exchange.models.ExchangeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,27 +25,19 @@ public class DispatcherUtil {
     private final WebClient webClient;
     private final JavaMailSender mailSender;
 
-    private FiscalMessageMapperUtil mapper;
-
     public DispatcherUtil(@Autowired(required = false)KafkaTemplate<String, String> kafkaTemplate, @Autowired(required = false)JavaMailSender mailSender) {
         this.kafkaTemplate = kafkaTemplate;
         this.webClient = WebClient.create();
         this.mailSender = mailSender;
-        this.mapper = new FiscalMessageMapperUtil();
     }
 
-    public String dispatch(String url, FiscalMessage fiscalHeader, String fiscalMessageStr) {
+    public String dispatch(String url, ExchangeMessage exchangeMessage) {
         
-        // ProgramRequestMessage programRequestMessage = new ProgramRequestMessage();
-        // programRequestMessage.setHeader(fiscalHeader);        
-        FiscalMessage fiscalMessage;
-        fiscalMessage = this.mapper.formatMessage(fiscalHeader.getFiscalMessageType(),fiscalMessageStr);
-
         if (url.startsWith("http://") || url.startsWith("https://")) {
             // HTTP call using WebClient
             Mono<String> responseMono = webClient.post()
                      .uri(url)
-                     .body(Mono.just(fiscalMessage), FiscalMessage.class)
+                     .body(Mono.just(exchangeMessage), ExchangeMessage.class)
                      .retrieve()
                      .bodyToMono(String.class);
             String result = responseMono.block();

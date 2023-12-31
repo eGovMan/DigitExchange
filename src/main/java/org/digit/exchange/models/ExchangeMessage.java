@@ -1,4 +1,4 @@
-package org.digit.exchange.models.fiscal;
+package org.digit.exchange.models;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -7,26 +7,34 @@ import java.util.UUID;
 
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import org.digit.exchange.utils.CurrencyConverter;
 import org.digit.exchange.utils.ZonedDateTimeConverter;
 
+import org.digit.exchange.constants.Error;
+import org.digit.exchange.constants.MessageType;
+import org.digit.exchange.exceptions.CustomException;
 
 @Getter
 @Setter
 @Embeddable
-public class FiscalMessage {
+public class ExchangeMessage {
     @JsonProperty("id")
     @Id
+    @NotBlank(message = Error.INVALID_ID)
     private String id;
     @NotNull
     @JsonProperty("schema_version")
     private String schemaVersion;
-    @JsonProperty("fiscal_message_type")
-    private String fiscalMessageType;
+    @JsonProperty("message_type")
+    private MessageType messageType;
     @JsonProperty("account_code")
     private String accountCode;
     @JsonProperty("function_code")
@@ -61,15 +69,13 @@ public class FiscalMessage {
     @JsonProperty("locale_code")
     private String localeCode;
 
-    public FiscalMessage(){
+    public ExchangeMessage(){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
         this.schemaVersion = "1.0.0";
     }
 
-    public void copy(FiscalMessage other){
-        UUID uuid = UUID.randomUUID();
-        this.id = uuid.toString();
+    public void copy(ExchangeMessage other){
         this.schemaVersion = other.schemaVersion;
         this.functionCode= other.functionCode;
         this.administrationCode = other.administrationCode;
@@ -84,4 +90,15 @@ public class FiscalMessage {
         this.grossAmount=other.grossAmount;
         this.currencyCode=other.currencyCode;
     }
+
+    static public ExchangeMessage fromString(String json){
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			return mapper.readValue(json, ExchangeMessage.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new CustomException("Error parsing ExchangeMessage fromString", e);
+		}
+	}
 }

@@ -2,15 +2,8 @@ package org.digit.exchange.models;
 
 import lombok.*;
 
-import org.digit.exchange.constants.Action;
-import org.digit.exchange.models.fiscal.Allocation;
-import org.digit.exchange.models.fiscal.Bill;
-import org.digit.exchange.models.fiscal.Demand;
-import org.digit.exchange.models.fiscal.Estimate;
-import org.digit.exchange.models.fiscal.FiscalMessage;
-import org.digit.exchange.models.fiscal.Program;
-import org.digit.exchange.models.fiscal.Receipt;
-import org.digit.exchange.models.fiscal.Sanction;
+import org.digit.exchange.constants.MessageType;
+import org.digit.exchange.exceptions.CustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +16,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.UUID;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 
 @Getter
@@ -39,7 +33,9 @@ public class RequestMessage{
     private String signature;
     @JsonProperty("header")
     @Embedded
+    @NotNull
     private RequestHeader header;
+    @NotNull
     @JsonProperty("message")
     @Column(columnDefinition = "TEXT")
     private String message;    
@@ -49,7 +45,7 @@ public class RequestMessage{
         this.id = uuid.toString();
     }
 
-    public RequestMessage(String to, String from, FiscalMessage message,Action action){
+    public RequestMessage(String to, String from, ExchangeMessage message,MessageType action){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
         this.header = new RequestHeader(to,from,message,action);
@@ -97,8 +93,8 @@ public class RequestMessage{
                 logger.error("Error while converting FiscalMessage to JSON");
                 throw new RuntimeException("Failed to process JSON", e);
             }
-        } else if(message instanceof Bill){
-            Bill bill = (Bill)message;
+        } else if(message instanceof Disbursement){
+            Disbursement bill = (Disbursement)message;
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
@@ -132,4 +128,15 @@ public class RequestMessage{
             }
         }
     }
+
+    static public RequestMessage fromString(String json){
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			return mapper.readValue(json, RequestMessage.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new CustomException("Error parsing RequestMessage fromString", e);
+		}
+	}
 }

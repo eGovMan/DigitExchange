@@ -1,4 +1,4 @@
-package org.digit.exchange.models.fiscal;
+package org.digit.exchange.models;
 
 import lombok.*;
 
@@ -6,15 +6,23 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.digit.exchange.constants.MessageType;
+import org.digit.exchange.exceptions.CustomException;
+
+import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Getter
 @Setter
-public class Estimate extends FiscalMessage {
+@Embeddable
+public class Estimate extends ExchangeMessage {
     @JsonProperty("name")
     private String name;
     @JsonProperty("parent")
@@ -33,17 +41,17 @@ public class Estimate extends FiscalMessage {
     private JsonNode additionalDetails;
 
     public Estimate(){
-        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+        this.setMessageType(MessageType.ESTIMATE);
     }
 
     public Estimate(Program program, ZonedDateTime startDate, ZonedDateTime endDate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(program);
-        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
         this.setProgram(program);
         this.startDate = startDate;
         this.endDate = endDate;
         this.setNetAmount(netAmount);        
         this.setGrossAmount(netAmount);        
+        this.setMessageType( MessageType.ESTIMATE);
     }
 
     @JsonIgnore
@@ -67,4 +75,15 @@ public class Estimate extends FiscalMessage {
             return getGrossAmount();
         }
     }
+
+    static public Estimate fromString(String json){
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			return mapper.readValue(json, Estimate.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new CustomException("Error parsing Estimate fromString", e);
+		}
+	}
 }

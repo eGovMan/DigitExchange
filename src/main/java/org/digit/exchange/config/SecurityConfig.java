@@ -1,4 +1,4 @@
-// package org.digit.exchange.config;
+package org.digit.exchange.config;
 
 // import org.springframework.context.annotation.Bean;
 // import org.springframework.context.annotation.Configuration;
@@ -22,5 +22,20 @@
 //         // ... further configuration as needed
 
 //         return http.build();
+//     }
+// }
+
+
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// import org.springframework.security.crypto.password.PasswordEncoder;
+
+// @Configuration
+// public class SecurityConfig {
+
+//     @Bean
+//     public PasswordEncoder passwordEncoder() {
+//         return new BCryptPasswordEncoder();
 //     }
 // }

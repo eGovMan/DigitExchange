@@ -1,4 +1,4 @@
-package org.digit.exchange.models.fiscal;
+package org.digit.exchange.models;
 
 import lombok.*;
 
@@ -7,17 +7,24 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import jakarta.persistence.Convert;
+import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 
+import org.digit.exchange.constants.MessageType;
+import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.utils.ZonedDateTimeConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Getter
 @Setter
-public class Allocation extends FiscalMessage {
+@Embeddable
+public class Allocation extends ExchangeMessage {
     @JsonProperty("id")
     private String id;
     @JsonProperty("sanction_id")
@@ -44,12 +51,12 @@ public class Allocation extends FiscalMessage {
 
 
     public Allocation(){
-        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+        this.setMessageType(MessageType.ALLOCATION);
     }
 
     public Allocation(Sanction sanction, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(sanction);
-        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+        this.setMessageType(MessageType.ALLOCATION);
         this.setSanction(sanction);
         this.setNetAmount(netAmount);    
         this.setGrossAmount(grossAmount);        
@@ -76,4 +83,15 @@ public class Allocation extends FiscalMessage {
             return getGrossAmount();
         }
     }
+
+    static public Allocation fromString(String json){
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			return mapper.readValue(json, Allocation.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new CustomException("Error parsing Allocation fromString", e);
+		}
+	}
 }

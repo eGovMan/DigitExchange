@@ -1,4 +1,4 @@
-package org.digit.exchange.models.fiscal;
+package org.digit.exchange.models;
 
 import lombok.*;
 
@@ -6,15 +6,23 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.digit.exchange.constants.MessageType;
+import org.digit.exchange.exceptions.CustomException;
+
+import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Getter
 @Setter
-public class Payment extends FiscalMessage {
+@Embeddable
+public class Payment extends ExchangeMessage {
     @JsonProperty("name")
     private String name;
     @NotNull
@@ -30,12 +38,12 @@ public class Payment extends FiscalMessage {
 
 
     public Payment(){
-        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+        this.setMessageType(MessageType.PAYMENT);
     }
 
     public Payment(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
         super.copy(estimate);
-        this.setFiscalMessageType( this.getClass().getSimpleName().toLowerCase());
+        this.setMessageType(MessageType.PAYMENT);
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }
@@ -61,4 +69,15 @@ public class Payment extends FiscalMessage {
             return getGrossAmount();
         }
     }
+
+    static public Payment fromString(String json){
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		try {
+			return mapper.readValue(json, Payment.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new CustomException("Error parsing Payment fromString", e);
+		}
+	}
 }

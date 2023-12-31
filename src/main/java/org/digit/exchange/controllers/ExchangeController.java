@@ -1,153 +1,34 @@
 package org.digit.exchange.controllers;
 
-import org.digit.exchange.config.AppConfig;
-import org.digit.exchange.constants.Status;
-import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.exceptions.ResourceNotFoundException;
 import org.digit.exchange.models.*;
-import org.digit.exchange.models.fiscal.FiscalMessage;
 import org.digit.exchange.service.ExchangeService;
-import org.digit.exchange.utils.DispatcherUtil;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-// import jakarta.servlet.http.HttpServletRequest;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.web.bind.annotation.PostMapping;
-
-// import io.swagger.v3.oas.annotations.Operation;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.time.Instant;
-
 
 @Controller
 @RequestMapping("/exchange/v1")
-@CrossOrigin(origins = "http://localhost:62926")
+@CrossOrigin(origins = "http://localhost:52546")
 public class ExchangeController{
-    // private final ObjectMapper objectMapper;
-    // private final HttpServletRequest request;
 
-    private final AppConfig config;
-    private final DispatcherUtil dispatcher;
     private final ExchangeService service;
 
-    // private static final Logger logger = LoggerFactory.getLogger(ExchangeController.class);
-
-    public ExchangeController(AppConfig config, DispatcherUtil dispatcher, ExchangeService service) {
-        this.config = config;
-        this.dispatcher = dispatcher;
+    public ExchangeController(ExchangeService service) {
         this.service = service;
-    }
-
-    public String[] parseDID(String input) {
-        if (input == null || input.isEmpty()) {
-            return null;
-        }
-        String[] parts = input.split("@", 2); // Limit to 2 parts in case there are multiple '@' in the string
-        return parts; // The first part before the '@'
-    }
-
-    private ResponseMessage prepareResponse(RequestMessage messageRequest, Status status, String senderId, int count, boolean isMsgEncrypted, String message){
-        ResponseMessage response = new ResponseMessage();
-        ResponseHeader header = new ResponseHeader();
-        //Set MessageId same as RequestMessage
-        header.setMessageId(messageRequest.getHeader().getMessageId());
-        //Generate Server Timestamp
-        Instant timestamp = Instant.now();
-        header.setMessageTs(timestamp.toString());
-        //Set Action to same as Request Message
-        header.setAction(messageRequest.getHeader().getAction());
-        //Set Status to as required
-        header.setStatus(status);
-        //Set SenderId to Current DIGIT Exchange Instance
-        header.setSenderId(senderId);
-        //Set ReceiverId to Request Message SenderId
-        header.setReceiverId(messageRequest.getHeader().getSenderId());
-        //Count
-        header.setTotalCount(count);
-        header.setMsgEncrypted(isMsgEncrypted);
-        // header.setMeta(messageRequest.getHeader().getFiscalMessage());
-        response.setHeader(header);
-        //If isMsgEncrypted then encrypt message
-            //Encrypt(message)
-        response.setMessage(message);
-        return response;
-    }
-
-    private ResponseMessage processMessage(String messageType, RequestMessage messageRequest){
-        //where does the message need to be delivered to. 
-        String receiver = messageRequest.getHeader().getReceiverId();
-        String[] recieverDid = parseDID(receiver);
-        String sender = messageRequest.getHeader().getSenderId();
-        String[] senderDid = parseDID(sender);
-        String fiscalResponse = "";
-        ResponseMessage response = null;
-        String deliverToUrl = "";
-        //If sender and reciever from current domain
-        if(recieverDid[1].equalsIgnoreCase(senderDid[1])){
-            //Get message handler based on messageType and action
-            String action = messageRequest.getHeader().getAction().toString();
-            deliverToUrl = config.getRoutes().get(messageType + "." + action);
-            if(deliverToUrl == null)
-                //No implementation available
-                throw new ResourceNotFoundException("Resource not found");
-            // Check if message is encrypted
-            // if(messageRequest.getHeader().isMsgEncrypted())
-                //Decrypt Message
-            //Verify Signature
-        }else{
-            //Check if sender is same domain
-            if(senderDid[1].equalsIgnoreCase(config.getDomain())){
-                //this is being sent to an external digit exchange server
-                deliverToUrl = senderDid[1] + "exchange/v1";
-                // Check if message needs to be is encrypted
-                // if(messageRequest.getHeader().isMsgEncrypted())
-                    //Encrypt Message
-                //Sign Message
-            }else{
-                //Message received from external domain
-                //Check if message needs to be is encrypted
-                //if(messageRequest.getHeader().isMsgEncrypted())
-                    //Decrypt Message
-                //Verify Signature
-            }
-        }
-        //Save Message in Message Store
-        service.createRequestMessage(messageRequest);
-
-        FiscalMessage fiscalMessage = messageRequest.getHeader().getFiscalMessage();
-        String fiscalMessageStr = messageRequest.getMessage();
-        fiscalResponse = dispatcher.dispatch(deliverToUrl,fiscalMessage, fiscalMessageStr);
-        //Emit Fiscal Event
-        String senderId = config.getName() + "@" + config.getDomain();
-        response = prepareResponse( messageRequest, Status.rcvd, senderId, 1, false, fiscalResponse);
-        return response;
     }
 
     // @Operation(summary = "Send program related Requests", description = "Send request to create or update a program.")
     @RequestMapping(value = "/program", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> program(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> program(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("program", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message, false));            
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -155,10 +36,9 @@ public class ExchangeController{
 
     // @Operation(summary = "Send responses for program related Requests.", description = "Send responses to create or update a program.")
     @RequestMapping(value = "/on-program", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> onprogram(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> onprogram(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("on-program", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,true));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -166,10 +46,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send estimate related Requests", description = "Send request to create or update a estimate.")
     @RequestMapping(value = "/estimate", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> estimate(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> estimate(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("estimate", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,false));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -177,10 +56,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send responses for estimate related Requests.", description = "Send responses to create or update a estimate.")
     @RequestMapping(value = "/on-estimate", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> onestimate(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> onestimate(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("on-estimate", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,true));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -188,10 +66,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send sanction related Requests", description = "Send request to create or update a sanction.")
     @RequestMapping(value = "/sanction", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> sanction(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> sanction(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("sanction", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,false));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -199,10 +76,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send responses for sanction related Requests.", description = "Send responses to create or update a sanction.")
     @RequestMapping(value = "/on-sanction", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> onsanction(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> onsanction(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("on-sanction", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,true));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -210,10 +86,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send allocation related Requests", description = "Send request to create or update a allocation.")
     @RequestMapping(value = "/allocation", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> allocation(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> allocation(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("allocation", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,false));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -221,10 +96,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send responses for allocation related Requests.", description = "Send responses to create or update a allocation.")
     @RequestMapping(value = "/on-allocation", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> onallocation(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> onallocation(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("on-allocation", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,true));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -232,10 +106,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send disburesment related Requests", description = "Send request to create or update a disburesment.")
     @RequestMapping(value = "/disburse", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> disburse(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> disburse(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("disburse", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,false));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -243,10 +116,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send responses for disbursement related Requests.", description = "Send responses to create or update a disbursement.")
     @RequestMapping(value = "/on-disburse", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> ondisburse(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> ondisburse(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("on-disburse", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,true));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -254,10 +126,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send responses for demand related Requests.", description = "Send responses to create or update a demand.")
     @RequestMapping(value = "/demand", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> demand(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> demand(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("demand", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,false));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -265,10 +136,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send responses for demand related Requests.", description = "Send responses to create or update a demand.")
     @RequestMapping(value = "/on-demand", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> ondemand(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> ondemand(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("on-demand", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,true));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -276,10 +146,9 @@ public class ExchangeController{
     
     // @Operation(summary = "Send receipt related Requests", description = "Send request to create or update a receipt.")
     @RequestMapping(value = "/receipt", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> receipt(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> receipt(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("receipt", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,false));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -287,36 +156,60 @@ public class ExchangeController{
     
     // @Operation(summary = "Send responses for receipt related Requests.", description = "Send responses to create or update a receipt.")
     @RequestMapping(value = "/on-receipt", method = RequestMethod.POST)
-    public ResponseEntity<ResponseMessage> onreceipt(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<RequestMessage> onreceipt(@RequestBody RequestMessage message) {
         try {
-            ResponseMessage response = processMessage("on-receipt", messageRequest);
-            return ResponseEntity.ok(response);            
+            return ResponseEntity.ok(service.send(message,true));   
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
     
+    @RequestMapping(value = "/individual", method = RequestMethod.POST)
+    public ResponseEntity<RequestMessage> individual(@RequestBody RequestMessage message) {
+        try {
+            return ResponseEntity.ok(service.send(message,false));   
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    // @Operation(summary = "Send responses for individual related Requests.", description = "Send responses to create or update a individual.")
+    @RequestMapping(value = "/on-individual", method = RequestMethod.POST)
+    public ResponseEntity<RequestMessage> onindividual(@RequestBody RequestMessage message) {
+        try {
+            return ResponseEntity.ok(service.send(message,true));   
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }    
+
+    @RequestMapping(value = "/organisation", method = RequestMethod.POST)
+    public ResponseEntity<RequestMessage> organisation(@RequestBody RequestMessage message) {
+        try {
+            return ResponseEntity.ok(service.send(message,false));   
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    // @Operation(summary = "Send responses for individual related Requests.", description = "Send responses to create or update a individual.")
+    @RequestMapping(value = "/on-organisation", method = RequestMethod.POST)
+    public ResponseEntity<RequestMessage> onorganisation(@RequestBody RequestMessage message) {
+        try {
+            return ResponseEntity.ok(service.send(message,true));   
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }    
+
     // @Operation(summary = "Retrieves request messages for a user.", description = "Retrieves request messages for a user.")
     @RequestMapping(value = "/inbox", method = RequestMethod.POST)
-    public ResponseEntity<Page<RequestMessage>> inbox(@RequestBody RequestMessage messageRequest) {
+    public ResponseEntity<Page<RequestMessage>> inbox(@RequestBody InboxRequest message) {
         try {
-            String receiverId = messageRequest.getHeader().getReceiverId();
-            String message = messageRequest.getMessage();
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(message);
-
-            int page = rootNode.path("page").asInt();
-            int size = rootNode.path("size").asInt();
-            Pageable pageable = PageRequest.of(page, size);
-            Page<RequestMessage> result = service.findByReceiverId(receiverId, pageable);
+            Page<RequestMessage> result = service.findByReceiverId(message);
             return ResponseEntity.ok(result);
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new CustomException("Error processing message object.", e);
-        } catch (Exception e){
-            e.printStackTrace();
-            throw new CustomException("Internal Server Error.", e);
+        } catch (ResourceNotFoundException e){
+            return ResponseEntity.notFound().build();
         }
     }
     
