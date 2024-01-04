@@ -1,8 +1,8 @@
 package org.digit.exchange.utils;
 
-import org.digit.exchange.constants.MessageType;
-import org.digit.exchange.models.ExchangeMessage;
-import org.digit.exchange.models.RequestMessage;
+import org.digit.exchange.constant.MessageType;
+import org.digit.exchange.model.messages.ExchangeMessage;
+import org.digit.exchange.model.messages.RequestMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

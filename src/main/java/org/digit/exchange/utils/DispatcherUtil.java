@@ -1,7 +1,7 @@
 package org.digit.exchange.utils;
 
 import org.springframework.stereotype.Service;
-import org.digit.exchange.models.ExchangeMessage;
+import org.digit.exchange.model.messages.ExchangeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,9 +13,6 @@ import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import reactor.core.publisher.Mono;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 
 @Service

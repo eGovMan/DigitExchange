@@ -8,7 +8,7 @@ import jakarta.persistence.AttributeConverter;
 import java.io.IOException;
 import java.util.List;
 
-import org.digit.exchange.models.LanguageValue;
+import org.digit.exchange.model.messages.LanguageValue;
 
 @Converter
 public class LanguageValueListConverter implements AttributeConverter<List<LanguageValue>, String> {
