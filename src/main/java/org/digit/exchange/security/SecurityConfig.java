@@ -39,6 +39,8 @@ public class SecurityConfig{
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/exchange/v1/public/**").permitAll()
+                .requestMatchers("/line/**").permitAll()
+                .requestMatchers("/finance/**").permitAll()
                 .requestMatchers("/exchange/v1/admin/**").hasRole(Role.ADMIN.toString())
                 .anyRequest().authenticated()
             )

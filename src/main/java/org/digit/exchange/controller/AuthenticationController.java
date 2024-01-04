@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    public AuthenticationController(AuthenticationManager authenticationManager) {
+    public AuthenticationController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
     @RequestMapping(value = "/public/authenticate", method=RequestMethod.POST)
@@ -33,6 +35,27 @@ public class AuthenticationController {
             return ResponseEntity.ok(jwt);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error during authentication");
+        }
+    }
+
+    @RequestMapping(value = "/refresh", method=RequestMethod.POST)
+    public ResponseEntity<?> refreshJwtToken(@RequestBody String refreshToken) {
+        try {
+            // Validate the refresh token
+            if (!jwtUtil.validateToken(refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
+            }
+
+            // Extract username from the token
+            String username = jwtUtil.extractUsername(refreshToken);
+
+            // Generate a new token with the same username
+            String newToken = JwtUtil.generateToken(username);
+
+            // Return the new token
+            return ResponseEntity.ok(newToken);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not refresh token");
         }
     }
 }

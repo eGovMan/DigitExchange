@@ -9,9 +9,14 @@ import javax.crypto.spec.SecretKeySpec;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.digit.exchange.exceptions.CustomException;
+import org.digit.exchange.model.Individual;
+import org.digit.exchange.repository.IndividualRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +24,11 @@ import org.springframework.stereotype.Component;
 public class JwtUtil {
     @Value("${JWT_SECRET_KEY}")
     private static String SECRET_KEY;
+    private static IndividualRepository individualRepository;
 
-    public JwtUtil(@Value("${JWT_SECRET_KEY}") String secretKey){
+    public JwtUtil(@Value("${JWT_SECRET_KEY}") String secretKey, IndividualRepository individualRepository){
         JwtUtil.SECRET_KEY = secretKey;
+        JwtUtil.individualRepository = individualRepository;
     }
 
     public static SecretKey generateSecretKey(String secret) {
@@ -34,13 +41,21 @@ public class JwtUtil {
         // Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
         SecretKey key = JwtUtil.generateSecretKey(SECRET_KEY);
 
-        return Jwts.builder()
-                .subject(username)
-                .expiration(new Date(currentTimeMillis + 3600000)) //expire one hour from now
-                .notBefore(new Date(currentTimeMillis)) 
-                .issuedAt(new Date()) 
-                .signWith(key)
-                .compact();
+        //Get the individual details
+        Optional<Individual> individual = JwtUtil.individualRepository.findById(username);
+        if(individual.isPresent()){
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("roles", individual.get().getRoles());
+
+            return Jwts.builder()
+                    .subject(username)
+                    .expiration(new Date(currentTimeMillis + 3600000)) //expire one hour from now
+                    .notBefore(new Date(currentTimeMillis)) 
+                    .issuedAt(new Date()) 
+                    .signWith(key)
+                    .compact();
+        }
+        return null;        
     }
 
     public boolean validateToken(String token) {

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableConfigurationProperties(AppConfig.class)
 @EnableJpaRepositories("org.digit.exchange")
-@ComponentScan(basePackages = { "org.digit.exchange","org.digit.exchange.models" })
+@ComponentScan(basePackages = { "org.digit.exchange","org.digit.exchange.models", "org.digit.line", "org.digit.finance" })
 @EntityScan(basePackages ={"org.digit.exchange","org.digit.exchange.models"})   
 public class ExchangeApplication {
 
