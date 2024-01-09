@@ -1,4 +1,4 @@
-package org.digit.exchange.model.messages;
+package org.digit.fix.model;
 
 import java.util.Collection;
 
@@ -22,11 +22,12 @@ import lombok.Setter;
 import org.digit.exchange.constant.Error;
 import org.digit.exchange.constant.Role;
 import org.digit.exchange.exceptions.CustomException;
+import org.digit.exchange.model.Address;
 
 @Getter
 @Setter
 @Embeddable
-public class Individual extends ExchangeMessage{
+public class Individual extends FiscalData{
 	@JsonProperty("address")
     @NotNull
     @Embedded

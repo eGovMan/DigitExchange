@@ -1,4 +1,6 @@
-package org.digit.exchange.model.messages;
+package org.digit.fix.model;
+
+import lombok.*;
 
 import org.digit.exchange.exceptions.CustomException;
 
@@ -8,26 +10,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.Setter;
 
-@Embeddable
 @Getter
 @Setter
-public class LanguageValue {
-    @JsonProperty("language")
-	private String language;
-    @JsonProperty("value")
-	private String value;
+@Embeddable
+public class Program extends FiscalData {
 
-    static public LanguageValue fromString(String json){
+    @JsonProperty("objectives")
+    private String[] objectives;    
+
+    public Program(){
+    }
+
+    static public Program fromString(String json){
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		try {
-			return mapper.readValue(json, LanguageValue.class);
+			return mapper.readValue(json, Program.class);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			throw new CustomException("Error parsing LanguageValue fromString", e);
+			throw new CustomException("Error parsing Program fromString", e);
 		}
 	}
 }

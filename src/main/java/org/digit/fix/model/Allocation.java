@@ -1,4 +1,4 @@
-package org.digit.exchange.model.messages;
+package org.digit.fix.model;
 
 import lombok.*;
 
@@ -22,7 +22,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Getter
 @Setter
 @Embeddable
-public class Allocation extends ExchangeMessage {
+public class Allocation extends FiscalData {
     @JsonProperty("sanction_id")
     private String sanctionId;
     @JsonProperty("allotment_type")

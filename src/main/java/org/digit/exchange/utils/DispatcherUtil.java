@@ -1,7 +1,7 @@
 package org.digit.exchange.utils;
 
 import org.springframework.stereotype.Service;
-import org.digit.exchange.model.messages.ExchangeMessage;
+import org.digit.fix.model.FiscalData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -28,17 +28,17 @@ public class DispatcherUtil {
         this.mailSender = mailSender;
     }
 
-    public String dispatch(String url, ExchangeMessage exchangeMessage) {
+    public FiscalData dispatch(String url, FiscalData fiscalData) {
         
         if (url.startsWith("http://") || url.startsWith("https://")) {
             // HTTP call using WebClient
-            Mono<String> responseMono = webClient.post()
+            Mono<FiscalData> responseMono = webClient.post()
                      .uri(url)
-                     .body(Mono.just(exchangeMessage), ExchangeMessage.class)
+                     .body(Mono.just(fiscalData), FiscalData.class)
                      .retrieve()
-                     .bodyToMono(String.class);
-            String result = responseMono.block();
-            return result;
+                     .bodyToMono(FiscalData.class);
+            FiscalData fiscalDataResponse = responseMono.block();
+            return fiscalDataResponse;
         } 
         // else if (url.startsWith("kafka://")) {
         //     // Kafka message

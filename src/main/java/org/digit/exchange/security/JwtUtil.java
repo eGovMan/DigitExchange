@@ -8,16 +8,21 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.model.Individual;
 import org.digit.exchange.repository.IndividualRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -49,6 +54,7 @@ public class JwtUtil {
 
             return Jwts.builder()
                     .subject(username)
+                    .claims(claims)
                     .expiration(new Date(currentTimeMillis + 3600000)) //expire one hour from now
                     .notBefore(new Date(currentTimeMillis)) 
                     .issuedAt(new Date()) 
@@ -63,14 +69,6 @@ public class JwtUtil {
         try{
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
-        // // SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256");
-
-        // // JwtParser jwtParser = Jwts.parser()
-        // //     .verifyWith(secretKeySpec)
-        // //     .build();
-        // try {
-        //     jwtParser.parse(token);
-        // 
         } catch (JwtException e) {
             throw new CustomException("Could not verify JWT token integrity!", e);
         }
@@ -93,6 +91,23 @@ public class JwtUtil {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();                    
+    }
+
+    public List<SimpleGrantedAuthority> extractAuthorities(String token) {
+        Claims claims = extractAllClaims(token);
+        List<?> rolesRaw = claims.get("roles", List.class);
+        if (rolesRaw == null) {
+            return Collections.emptyList();
+        }
+        List<String> roles = new ArrayList<>();
+        for (Object roleObj : rolesRaw) {
+            if (roleObj instanceof String) {
+                roles.add((String) roleObj);
+            }
+        }
+        return roles.stream()
+                    .map(role -> new SimpleGrantedAuthority(role))
+                    .collect(Collectors.toList());
     }
 
 }

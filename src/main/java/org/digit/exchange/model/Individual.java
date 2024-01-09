@@ -24,7 +24,6 @@ import lombok.Setter;
 import org.digit.exchange.constant.Error;
 import org.digit.exchange.constant.Role;
 import org.digit.exchange.exceptions.CustomException;
-import org.digit.exchange.model.messages.Address;
 
 @Getter
 @Setter
@@ -61,6 +60,7 @@ public class Individual{
 
     @JsonProperty("is_active")
 	Boolean isActive;
+	
 	
 	static public Individual fromString(String json){
 		ObjectMapper mapper = new ObjectMapper();

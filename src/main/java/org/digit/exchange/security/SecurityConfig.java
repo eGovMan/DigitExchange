@@ -41,14 +41,16 @@ public class SecurityConfig{
                 .requestMatchers("/exchange/v1/public/**").permitAll()
                 .requestMatchers("/line/**").permitAll()
                 .requestMatchers("/finance/**").permitAll()
-                .requestMatchers("/exchange/v1/admin/**").hasRole(Role.ADMIN.toString())
+                .requestMatchers("/exchange/v1/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .addFilter(new CustomJwtAuthenticationFilter(authenticationManager)) 
-            .addFilterBefore(new JwtRequestFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(new JwtRequestFilter(jwtUtil), CustomJwtAuthenticationFilter.class);
+            // .addFilterBefore(new ApiKeyAuthFilter(), JwtRequestFilter.class);
+
 
         return http.build();
     }

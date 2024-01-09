@@ -1,4 +1,4 @@
-package org.digit.exchange.model.messages;
+package org.digit.fix.model;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -26,7 +26,7 @@ import org.digit.exchange.exceptions.CustomException;
 @Getter
 @Setter
 @Embeddable
-public class ExchangeMessage {
+public class FiscalData {
     @JsonProperty("id")
     @Id
     @NotBlank(message = Error.INVALID_ID)
@@ -74,22 +74,22 @@ public class ExchangeMessage {
     @JsonProperty("locale_code")
     private String localeCode;
     @JsonProperty("children")
-    private List<ExchangeMessage> children;
+    private List<FiscalData> children;
     @JsonProperty("status")
     private Status status;
-    @JsonProperty("audit_details")
-    private AuditDetails auditDetails;
+    // @JsonProperty("audit_details")
+    // private AuditDetails auditDetails;
     @JsonProperty("additional_details")
     private JsonNode additionalDetails;
 
 
-    public ExchangeMessage(){
+    public FiscalData(){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
         this.schemaVersion = "1.0.0";
     }
 
-    public void copy(ExchangeMessage other){
+    public void copy(FiscalData other){
         this.schemaVersion = other.schemaVersion;
         this.functionCode= other.functionCode;
         this.administrationCode = other.administrationCode;
@@ -105,11 +105,11 @@ public class ExchangeMessage {
         this.currencyCode=other.currencyCode;
     }
 
-    static public ExchangeMessage fromString(String json){
+    static public FiscalData fromString(String json){
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		try {
-			return mapper.readValue(json, ExchangeMessage.class);
+			return mapper.readValue(json, FiscalData.class);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			throw new CustomException("Error parsing ExchangeMessage fromString", e);

@@ -1,4 +1,4 @@
-package org.digit.exchange.model.messages;
+package org.digit.fix.model;
 
 import lombok.*;
 

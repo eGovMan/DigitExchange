@@ -1,15 +1,18 @@
 package org.digit.exchange.model;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import jakarta.persistence.Convert;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -19,10 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.digit.exchange.constant.Error;
+import org.digit.exchange.constant.OrganisationRole;
 import org.digit.exchange.exceptions.CustomException;
-import org.digit.exchange.model.messages.Address;
-import org.digit.exchange.model.messages.LanguageValue;
-import org.digit.exchange.utils.LanguageValueListConverter;;
 
 
 @Getter
@@ -35,14 +36,14 @@ public class Organisation{
 	@Id
 	String id;
 
-	@JsonProperty("organisation_type")
-	@NotBlank(message = Error.INVALID_ORGANISATION_TYPE)
-	String orgType;
+	@JsonProperty("organisation_roles")
+	@ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING) // or EnumType.ORDINAL if you prefer numbers
+	Collection<OrganisationRole> orgRoles;
 
-    @Convert(converter = LanguageValueListConverter.class)
     @JsonProperty("name")
-	@Size(min = 1, message = Error.INVALID_NAME)
-	List<LanguageValue> name;
+	@NotBlank(message = Error.INVALID_NAME)
+	String name;
 
 	@JsonProperty("address")
     @NotNull
@@ -50,12 +51,26 @@ public class Organisation{
 	@Size(min = 1, message = Error.INVALID_ADDRESS)
 	Address address;
 
-    @JsonProperty("digit_exchange_uri")
-	String digit_exchange_url;
+	@JsonProperty("is_endpoint_digit_exchange")
+	String isDigitExchange;
+
+    @JsonProperty("endpoint_url")
+	String endpointUrl;
+
+	@JsonProperty("agency_api_key")
+	String agencyApiKey;
+
+	@JsonProperty("api_key")
+	String apiKey;
+
+	@JsonProperty("is_active")
+	Boolean isActive;
 
 	@NotNull
 	@JsonProperty("administrator_id")
 	String administratorId;
+
+	
 
     static public Organisation fromString(String json){
 		ObjectMapper mapper = new ObjectMapper();

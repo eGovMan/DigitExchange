@@ -1,6 +1,6 @@
 package org.digit.exchange.controller;
 
-import org.digit.exchange.model.messages.Pin;
+import org.digit.exchange.dto.PinDTO;
 import org.digit.exchange.security.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/public/authenticate", method=RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody Pin pin) {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody PinDTO pin) {
         try {
             authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(pin.getUserId(), pin.getPin()));
@@ -38,7 +38,7 @@ public class AuthenticationController {
         }
     }
 
-    @RequestMapping(value = "/refresh", method=RequestMethod.POST)
+    @RequestMapping(value = "/public/refresh", method=RequestMethod.POST)
     public ResponseEntity<?> refreshJwtToken(@RequestBody String refreshToken) {
         try {
             // Validate the refresh token

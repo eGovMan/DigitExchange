@@ -1,4 +1,4 @@
-package org.digit.exchange.model.messages;
+package org.digit.fix.model;
 
 import lombok.*;
 
@@ -21,35 +21,36 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Getter
 @Setter
 @Embeddable
-public class Collection extends ExchangeMessage {
+public class Sanction extends FiscalData {
     @JsonProperty("name")
     private String name;
     @NotNull
     private ZonedDateTime startDate;
     @NotNull
     private ZonedDateTime endDate;
-    @JsonProperty("reciepts")
-    private List<Collection> reciepts;
+    @JsonProperty("program")
+    private Program program;
+    @JsonProperty("sanctions")
+    private List<Sanction> sanctions;
     @JsonProperty("audit_details")
     private AuditDetails auditDetails;
     @JsonProperty("additional_details")
     private JsonNode additionalDetails;
 
-
-    public Collection(){
+    public Sanction(){
     }
 
-    public Collection(Demand demand, BigDecimal netAmount, BigDecimal grossAmount){
-        super.copy(demand);
+    public Sanction(Estimate estimate, BigDecimal netAmount, BigDecimal grossAmount){
+        super.copy(estimate);
         this.setNetAmount(netAmount);        
         this.setGrossAmount(grossAmount);        
     }
 
     @JsonIgnore
     public BigDecimal getTotalNetAmount() {
-        if (reciepts != null && !reciepts.isEmpty()) {
-            return reciepts.stream()
-                           .map(Collection::getNetAmount)
+        if (sanctions != null && !sanctions.isEmpty()) {
+            return sanctions.stream()
+                           .map(Sanction::getNetAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
             return getNetAmount();
@@ -58,23 +59,24 @@ public class Collection extends ExchangeMessage {
 
     @JsonIgnore
     public BigDecimal getTotalGrossAmount() {
-        if (reciepts != null && !reciepts.isEmpty()) {
-            return reciepts.stream()
-                           .map(Collection::getGrossAmount)
+        if (sanctions != null && !sanctions.isEmpty()) {
+            return sanctions.stream()
+                           .map(Sanction::getGrossAmount)
                            .reduce(BigDecimal.ZERO, BigDecimal::add);
         } else {
             return getNetAmount();
         }
     }
 
-    static public Collection fromString(String json){
+    static public Sanction fromString(String json){
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		try {
-			return mapper.readValue(json, Collection.class);
+			return mapper.readValue(json, Sanction.class);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			throw new CustomException("Error parsing Receipt fromString", e);
+			throw new CustomException("Error parsing Sanction fromString", e);
 		}
 	}
+
 }

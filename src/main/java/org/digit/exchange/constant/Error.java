@@ -6,6 +6,7 @@ public class Error{
 	public static final String UNKNOWN_ERROR = "unknown_error";
 	public static final String JSON_PROCESSING_ERROR = "json_processing_error";
 	public static final String INVALID_ID = "invalid_id";
+	public static final String INVALID_ADMIN_ID = "invalid_admin_id";
 	public static final String INVALID_ADDRESS = "invalid_address";
 	public static final String INVALID_PIN = "invalid_pin";
 	public static final String INVALID_EMAIL = "invalid_email";
@@ -34,5 +35,6 @@ public class Error{
 	public static final String DUPLICATE_INDIVIDUAL_ID = "duplicate_individual_id";
 	public static final String INVALID_ORGANISATION_TYPE = "invalid_organisation_type";
 	public static final String INVALID_MESSAGE_TYPE = "invalid_message_type";
+	public static final String INVALID_API_KEY = "Invalid API Key";
 	
 }

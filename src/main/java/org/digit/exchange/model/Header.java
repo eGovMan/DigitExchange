@@ -1,4 +1,4 @@
-package org.digit.exchange.model.messages;
+package org.digit.exchange.model;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.digit.exchange.constant.MessageType;
 import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.utils.ZonedDateTimeConverter;
+import org.digit.fix.model.FiscalData;
 
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,7 +23,7 @@ import jakarta.validation.constraints.NotNull;
 @Embeddable
 @Getter
 @Setter
-public class RequestHeader{ 
+public class Header{ 
     @Id
     private String id;
     @NotNull
@@ -56,13 +57,16 @@ public class RequestHeader{
     // @Embedded
     // private ExchangeMessage exchangeMessage;    
 
-    public RequestHeader(){
+    public Header(){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
         this.version = "1.0.0";
+        this.messageTs = ZonedDateTime.now();
+        //for new messages messageId is same as id. for reply messageId is same as original message id.
+        this.messageId = this.id;
     }
 
-    public RequestHeader(String to, String from, ExchangeMessage message, MessageType messageType){
+    public Header(String to, String from, FiscalData message, MessageType messageType){
         this.senderId = from;
         this.receiverId = to;
         this.messageType = messageType;
@@ -70,18 +74,14 @@ public class RequestHeader{
         //Set MessageID
         UUID uuid = UUID.randomUUID();
         this.messageId = uuid.toString();
-        //Set Timestamp
-        ZoneId zoneId = ZoneId.of("Asia/Kolkata");
-        ZonedDateTime now = LocalDateTime.now().atZone(zoneId);
-        this.messageTs = now;
- 
+        this.messageTs = ZonedDateTime.now();
     }
 
-    static public RequestHeader fromString(String json){
+    static public Header fromString(String json){
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		try {
-			return mapper.readValue(json, RequestHeader.class);
+			return mapper.readValue(json, Header.class);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			throw new CustomException("Error parsing RequestHeader fromString", e);

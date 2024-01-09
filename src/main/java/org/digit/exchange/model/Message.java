@@ -1,9 +1,17 @@
-package org.digit.exchange.model.messages;
+package org.digit.exchange.model;
 
 import lombok.*;
 
 import org.digit.exchange.constant.MessageType;
 import org.digit.exchange.exceptions.CustomException;
+import org.digit.fix.model.Allocation;
+import org.digit.fix.model.Collection;
+import org.digit.fix.model.Demand;
+import org.digit.fix.model.Disbursement;
+import org.digit.fix.model.Estimate;
+import org.digit.fix.model.FiscalData;
+import org.digit.fix.model.Program;
+import org.digit.fix.model.Sanction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +30,10 @@ import jakarta.validation.constraints.NotNull;
 @Getter
 @Setter
 @Entity
-@Table(name="request_message")
-public class RequestMessage{
+@Table(name="exchange_message")
+public class Message{
 
-    private static final Logger logger = LoggerFactory.getLogger(RequestMessage.class);
+    private static final Logger logger = LoggerFactory.getLogger(Message.class);
 
     @Id
     private String id;
@@ -34,21 +42,22 @@ public class RequestMessage{
     @JsonProperty("header")
     @Embedded
     @NotNull
-    private RequestHeader header;
+    private Header header;
     @NotNull
     @JsonProperty("message")
     @Column(columnDefinition = "TEXT")
     private String message;    
 
-    public RequestMessage(){
+    public Message(){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
+        this.header = new Header();
     }
 
-    public RequestMessage(String to, String from, ExchangeMessage message,MessageType action){
+    public Message(String to, String from, FiscalData message,MessageType action){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
-        this.header = new RequestHeader(to,from,message,action);
+        this.header = new Header(to,from,message,action);
         if(message instanceof Program){
             Program program = (Program)message;
             try {
@@ -129,11 +138,11 @@ public class RequestMessage{
         }
     }
 
-    static public RequestMessage fromString(String json){
+    static public Message fromString(String json){
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		try {
-			return mapper.readValue(json, RequestMessage.class);
+			return mapper.readValue(json, Message.class);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			throw new CustomException("Error parsing RequestMessage fromString", e);

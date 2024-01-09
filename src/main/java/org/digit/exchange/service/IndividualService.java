@@ -4,9 +4,15 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.model.Individual;
+import org.digit.exchange.model.Message;
+import org.digit.exchange.model.SearchRequest;
 import org.digit.exchange.repository.IndividualRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,7 +61,7 @@ public class IndividualService implements UserDetailsService{
     }
 
     // Read
-    public Optional<Individual> getIndividualById(String id) {
+    public Optional<Individual> findIndividualById(String id) {
         return individualRepository.findById(id);
     }
 
@@ -67,6 +73,19 @@ public class IndividualService implements UserDetailsService{
     public Individual updateIndividual(Individual individual) {
         // Assuming the individual has a valid ID
         return individualRepository.save(individual);
+    }
+
+    public Page<Individual> findAllIndividuals(SearchRequest searchRequest) {
+        try{
+            int page = searchRequest.getPage();
+            int size = searchRequest.getSize(); 
+            Pageable pageable = PageRequest.of(page, size);
+            
+            Page<Individual> result = individualRepository.findAll(pageable);
+            return result;
+        } catch (Exception e) {
+            throw new CustomException("Error finding individuals.", e);
+        }
     }
 
     // // Delete

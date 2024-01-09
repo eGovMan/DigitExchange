@@ -1,9 +1,12 @@
 package org.digit.exchange.controller;
 
+import org.digit.exchange.dto.IndividualDTO;
 import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.exceptions.ResourceNotFoundException;
-import org.digit.exchange.model.messages.Individual;
+import org.digit.exchange.model.SearchRequest;
+import org.digit.exchange.model.Individual;
 import org.digit.exchange.service.IndividualService;
+import org.springframework.data.domain.Page;
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -24,33 +27,34 @@ public class IndividualController {
     }
 
     @RequestMapping(value = "/public/individual/create", method = RequestMethod.POST)
-    public ResponseEntity<Individual> create(@RequestBody Individual user) {
+    public ResponseEntity<IndividualDTO> create(@RequestBody IndividualDTO individualDto) {
         try {                
-            org.digit.exchange.model.Individual individual = new org.digit.exchange.model.Individual();
-            individual.setAddress(user.getAddress());
-            individual.setId(user.getId());
-            individual.setEmail(user.getEmail());
-            individual.setName(user.getName());
-            individual.setRoles(user.getRoles());
-            individual.setPhone(user.getPhone());
-            individual.setIsActive(false);
-            service.createIndividual(individual);
-            return ResponseEntity.ok(user);            
+            Individual individual = individualDto.toIndividual();
+            Individual result = service.createIndividual(individual);
+            return ResponseEntity.ok(new IndividualDTO(result));            
         } catch (ResourceNotFoundException e) {
             throw new CustomException("Error saving user", e);
         }
     }
 
     @RequestMapping(value = "/admin/individual/update", method = RequestMethod.POST)
-    public ResponseEntity<Individual> update(@RequestBody Individual user) {
+    public ResponseEntity<IndividualDTO> update(@RequestBody IndividualDTO individualDto) {
         try {                
-            org.digit.exchange.model.Individual individual = new org.digit.exchange.model.Individual();
-            individual.setId(user.getId());
-            individual.setIsActive(true);
-            service.updateIndividual(individual);
-            return ResponseEntity.ok(user);            
+            Individual individual = individualDto.toIndividual();
+            Individual result = service.updateIndividual(individual);
+            return ResponseEntity.ok(new IndividualDTO(result));            
         } catch (ResourceNotFoundException e) {
             throw new CustomException("Error saving user", e);
+        }
+    }
+
+    @RequestMapping(value = "/admin/individual/search", method = RequestMethod.POST)
+    public ResponseEntity<Page<Individual>> search(@RequestBody SearchRequest searchRequest) {
+        try {
+            Page<Individual> result = service.findAllIndividuals(searchRequest);
+            return ResponseEntity.ok(result);
+        } catch (ResourceNotFoundException e){
+            return ResponseEntity.notFound().build();
         }
     }
 

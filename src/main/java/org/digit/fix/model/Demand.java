@@ -1,4 +1,4 @@
-package org.digit.exchange.model.messages;
+package org.digit.fix.model;
 
 import lombok.*;
 
@@ -18,7 +18,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Getter
 @Setter
 @Embeddable
-public class Demand extends ExchangeMessage {
+public class Demand extends FiscalData {
     @JsonProperty("demands")
     private List<Demand> demands;
 

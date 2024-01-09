@@ -1,35 +1,33 @@
-package org.digit.exchange.model.messages;
+package org.digit.fix.model;
+
+import org.digit.exchange.exceptions.CustomException;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import jakarta.persistence.Id;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.digit.exchange.exceptions.CustomException;
-
-
+@Embeddable
 @Getter
 @Setter
-public class Pin{
-    @Id
-    @JsonProperty("user_id")
-	String userId;
-	
-    @JsonProperty("pin")
-	String pin;
+public class LanguageValue {
+    @JsonProperty("language")
+	private String language;
+    @JsonProperty("value")
+	private String value;
 
-	static public Pin fromString(String json){
+    static public LanguageValue fromString(String json){
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		try {
-			return mapper.readValue(json, Pin.class);
+			return mapper.readValue(json, LanguageValue.class);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			throw new CustomException("Error parsing VerificationRequest fromString", e);
+			throw new CustomException("Error parsing LanguageValue fromString", e);
 		}
 	}
 }

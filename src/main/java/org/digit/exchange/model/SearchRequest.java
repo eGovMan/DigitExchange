@@ -1,4 +1,4 @@
-package org.digit.exchange.model.messages;
+package org.digit.exchange.model;
 
 import org.digit.exchange.exceptions.CustomException;
 
@@ -12,10 +12,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class InboxRequest {
+public class SearchRequest {
     
-    @JsonProperty("receiver_id")
-    private String receiverId;
+    @JsonProperty("search_string")
+    private String searchString;
 
     @JsonProperty("page")
     private int page;
@@ -23,11 +23,11 @@ public class InboxRequest {
     @JsonProperty("size")
     private int size;
     
-    static public InboxRequest fromString(String json){
+    static public SearchRequest fromString(String json){
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         try {
-        return mapper.readValue(json, InboxRequest.class);
+        return mapper.readValue(json, SearchRequest.class);
         } catch (JsonProcessingException e) {
 			e.printStackTrace();
 			throw new CustomException("Error parsing Address fromString", e);
