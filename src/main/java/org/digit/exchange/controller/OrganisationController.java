@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.digit.exchange.constant.OrganisationRole;
-import org.digit.exchange.dto.MessageDTO;
 import org.digit.exchange.dto.OrganisationDTO;
 import org.digit.exchange.exceptions.CustomException;
 import org.digit.exchange.exceptions.ResourceNotFoundException;

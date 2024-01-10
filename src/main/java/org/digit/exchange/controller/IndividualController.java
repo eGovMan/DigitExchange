@@ -26,7 +26,7 @@ public class IndividualController {
         this.service = service;
     }
 
-    @RequestMapping(value = "/public/individual/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/admin/individual/create", method = RequestMethod.POST)
     public ResponseEntity<IndividualDTO> create(@RequestBody IndividualDTO individualDto) {
         try {                
             Individual individual = individualDto.toIndividual();

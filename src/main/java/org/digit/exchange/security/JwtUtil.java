@@ -46,11 +46,20 @@ public class JwtUtil {
         // Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
         SecretKey key = JwtUtil.generateSecretKey(SECRET_KEY);
 
+        
+
         //Get the individual details
         Optional<Individual> individual = JwtUtil.individualRepository.findById(username);
+
+        List<String> rolesWithPrefix = individual.get().getRoles().stream()
+                                             .map(role -> "ROLE_" + role)
+                                             .collect(Collectors.toList());
+    
         if(individual.isPresent()){
             Map<String, Object> claims = new HashMap<>();
-            claims.put("roles", individual.get().getRoles());
+            claims.put("roles", rolesWithPrefix);
+
+            
 
             return Jwts.builder()
                     .subject(username)

@@ -1,6 +1,7 @@
 package org.digit.exchange.dto;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,12 +26,9 @@ public class IndividualDTO{
 	String id;
 	
     @JsonProperty("name")
-    @NotNull
 	String name;
 
 	@JsonProperty("address")
-    @NotNull
-	@Size(min = 1, message = Error.INVALID_ADDRESS)
 	AddressDTO address;
 
     @JsonProperty("email")
@@ -48,10 +46,14 @@ public class IndividualDTO{
     @JsonProperty("is_active")
 	Boolean isActive;
 
+	 public IndividualDTO(){
+    }
+
 	public IndividualDTO(Individual individual) {
 		this.id = individual.getId();
 		this.name = individual.getName();
-		this.address = new AddressDTO(individual.getAddress()); // Convert Address to AddressDTO
+		if(individual.getAddress()!=null)
+			this.address = new AddressDTO(individual.getAddress()); // Convert Address to AddressDTO
 		this.email = individual.getEmail();
 		this.phone = individual.getPhone();
 		this.pin = individual.getPin();
@@ -64,7 +66,8 @@ public class IndividualDTO{
 
         individual.setId(this.id);
         individual.setName(this.name);
-        individual.setAddress(this.address.toAddress()); // Assuming AddressDTO has a toAddress() method
+		if(this.address!=null)
+	        individual.setAddress(this.address.toAddress()); // Assuming AddressDTO has a toAddress() method
         individual.setEmail(this.email);
         individual.setPhone(this.phone);
         individual.setPin(this.pin);

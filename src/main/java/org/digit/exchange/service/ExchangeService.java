@@ -52,6 +52,20 @@ public class ExchangeService {
         }
     }
 
+    public Page<Message> findBySenderId(SearchRequest message) {
+        try{
+            String senderId = message.getSearchString();
+            int page = message.getPage();
+            int size = message.getSize();
+            Pageable pageable = PageRequest.of(page, size);
+            
+            Page<Message> result = messageRepository.findByHeaderSenderId(senderId,pageable);
+            return result;
+        } catch (Exception e) {
+            throw new CustomException("Error processing message object.", e);
+        }
+    }
+
     // // Find by Sender Id
     // public Page<Message> findBySenderId(String id, Pageable pageable) {
     //     return messageRepository.findByHeaderSenderId(id,pageable);

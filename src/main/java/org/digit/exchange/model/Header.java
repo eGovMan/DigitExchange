@@ -1,7 +1,5 @@
 package org.digit.exchange.model;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
